@@ -16,3 +16,7 @@ Thumbs.db
 
 # Claude Code
 .claude/
+
+# EchoPM local state
+.echo-pm/
+reports/
