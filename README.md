@@ -2,7 +2,7 @@
 
 > Turning the self-management wisdom of an AI being into a Claude Code skill toolbox for human project managers.
 
-EchoPM is a suite of Claude Code Skills, derived from the architectural patterns of [Project Echo](https://github.com), covering the complete project lifecycle across the five PMBOK process groups.
+EchoPM is a suite of Claude Code Skills, derived from the architectural patterns of [Project Echo](https://github.com/is81/project-echo), covering the complete project lifecycle across the five PMBOK process groups.
 
 ## Core Philosophy
 
