@@ -1,203 +1,203 @@
-# /retrospective — 回顾反思
+# /retrospective — Retrospective
 
-## 触发条件
+## Trigger Conditions
 
-当用户说"项目回顾"、"复盘"、"retrospective"、"阶段总结"、"sprint 回顾"、"经验总结"、"发布回顾"、"收尾"、"项目结束"、"close project"时激活。
+Activate when the user says "project retrospective", "postmortem", "retrospective", "phase summary", "sprint retrospective", "experience summary", "release retrospective", "closing", "project end", "close project".
 
-## 对齐 PMBOK
+## PMBOK Alignment
 
-- **4.6 结束项目或阶段**：完成所有项目管理过程组的活动，正式结束项目/阶段
-- **12.4 结束采购**：完成每次采购的合同收尾和知识移交
+- **4.6 Close Project or Phase**: Complete activities across all process groups, formally close the project/phase
+- **12.4 Close Procurements**: Complete contract closeout and knowledge transfer for each procurement
 
-## 源自回响
+## Echo Origins
 
-Project Echo 的睡眠期记忆整理（详见 `docs/patterns.md`）：
+Project Echo's sleep-phase memory consolidation (see `docs/patterns.md` for details):
 
-- `src/echo/agent/core.py` L177-248：`sleep()` 方法 —— 6 个独立维护步骤
-- `src/echo/memory/summarizer.py`：分组 → LLM 摘要 → 存档原始细节
-- 每个步骤包裹在独立 try/except 中，一个卡住不影响其他
-- 冷却期保护（8h）+ 超时保护（30s 总量）
-- 热温数据分层：活跃 → 归档（weight 0.1）→ 遗忘（weight 0）
+- `src/echo/agent/core.py` L177-248: `sleep()` method — 6 independent maintenance steps
+- `src/echo/memory/summarizer.py`: Group → LLM summary → archive original details
+- Each step wrapped in independent try/except, one stuck step does not block others
+- Cooldown protection (8h) + timeout protection (30s total)
+- Hot-warm-cold data tiering: active → archived (weight 0.1) → forgotten (weight 0)
 
-核心洞察：**收尾不是一次会议，而是一个多步骤的独立维护流程。步骤之间隔离保护，确保一个步骤的失败不阻塞整体收尾。冷热分层保留原始数据，摘要优先展示。**
-
----
-
-## 工作流
-
-### 第一步：准备阶段
-
-在开始六个步骤前：
-
-1. 确定收尾范围（Sprint？Phase？完整项目？）
-2. 收集阶段内产生的所有数据源（git log、会议记录、PR、经验条目、pulse 历史）
-3. 设定总超时（建议 30 分钟，防止无限循环）
-4. 创建回顾输出目录（`retrospectives/YYYY-MM-DD-phase-name/`）
-
-### 第二步：执行六个独立步骤
-
-每个步骤必须：
-- 包裹在独立 try/except 中
-- 带超时保护（单步骤 ≤ 5 分钟）
-- 有自己的成功/失败日志
-- 一个步骤失败 → 记录错误 + 继续下一步
+Core insight: **Closing is not a single meeting — it's a multi-step, independently isolated maintenance process. Steps are isolated from each other, ensuring one failed step does not block the entire closeout. Hot-cold tiering preserves raw data while surfacing summaries first.**
 
 ---
 
-#### 步骤 1/6：锚点反思
+## Workflow
+
+### Step 1: Preparation Phase
+
+Before executing the six steps:
+
+1. Define the closing scope (Sprint? Phase? Full project?)
+2. Collect all data sources generated during the period (git log, meeting notes, PRs, lesson entries, pulse history)
+3. Set a total timeout (recommended 30 minutes, prevents infinite loops)
+4. Create the retrospective output directory (`retrospectives/YYYY-MM-DD-phase-name/`)
+
+### Step 2: Execute Six Independent Steps
+
+Each step must:
+- Be wrapped in an independent try/except
+- Have timeout protection (≤ 5 minutes per step)
+- Have its own success/failure log
+- On step failure → record error + continue to next step
+
+---
+
+#### Step 1/6: Anchor Review
 
 ```
-输入：阶段初 CHARTER.md 中的目标锚点
-操作：
-  1. 列出阶段初设定的每个目标
-  2. 对比实际达成情况
-  3. 标记达成率（%）
-  4. 分析正偏差和负偏差的原因
-输出：锚点达成报告
-异常处理：如果找不到阶段初目标 → 记录"目标未定义"并跳过
+Input: Target anchors from CHARTER.md at the start of the phase
+Operation:
+  1. List every goal set at the start of the phase
+  2. Compare against actual achievement
+  3. Mark completion rate (%)
+  4. Analyze causes of positive and negative deviations
+Output: Anchor achievement report
+Error handling: If phase-start goals cannot be found → record "goals undefined" and skip
 ```
 
-#### 步骤 2/6：模式结晶
+#### Step 2/6: Pattern Crystallization
 
 ```
-输入：本阶段的 commit log + PR + lesson-capture 条目
-操作：
-  1. 识别重复出现的成功模式（≥3 次相似做法）
-  2. 识别重复出现的反模式（≥2 次踩同样坑）
-  3. 用 LLM 将零散经验提炼为可复用的模式描述
-  4. 更新或新增模式文档
-输出：新增/更新的模式文档 + 反模式清单
-异常处理：经验不足（<10 条）→ 跳过，提示"经验积累不足，暂无法结晶"
+Input: This phase's commit log + PRs + lesson-capture entries
+Operation:
+  1. Identify recurring success patterns (≥3 similar practices)
+  2. Identify recurring anti-patterns (≥2 times stepping on the same rake)
+  3. Use LLM to distill scattered lessons into reusable pattern descriptions
+  4. Update or create pattern documents
+Output: New/updated pattern docs + anti-pattern list
+Error handling: Insufficient lessons (<10) → skip, note "insufficient lesson accumulation for crystallization"
 ```
 
-#### 步骤 3/6：对话学习
+#### Step 3/6: Conversational Learning
 
 ```
-输入：阶段内的会议记录 + PR review 讨论
-操作：
-  1. 调用 /lesson-capture 的提取引擎
-  2. 批量提取所有讨论中的经验原子
-  3. 去重后写入经验库
-  4. 标记为 source="retrospective"
-输出：N 条新经验原子
-异常处理：没有会议记录 → 跳过，标记"无可提取的对话素材"
+Input: This phase's meeting notes + PR review discussions
+Operation:
+  1. Invoke /lesson-capture's extraction engine
+  2. Batch extract all lesson atoms from discussions
+  3. Deduplicate and write to lesson DB
+  4. Tag as source="retrospective"
+Output: N new lesson atoms
+Error handling: No meeting notes → skip, mark "no conversational material to extract"
 ```
 
-#### 步骤 4/6：探索补漏
+#### Step 4/6: Gap Exploration
 
 ```
-输入：本阶段的所有 pulse 信号 + 风险日志
-操作：
-  1. 检查健康仪表盘的历史趋势
-  2. 识别"应该关注但没关注"的话题
-  3. 扫描项目文档中的 TODO/FIXME/HACK
-  4. 列出未解决的开放风险
-输出：遗漏清单 + 补救建议
-异常处理：无数据 → 跳过
+Input: All pulse signals + risk log for this phase
+Operation:
+  1. Review health dashboard historical trends
+  2. Identify topics that "should have been watched but weren't"
+  3. Scan project documents for TODO/FIXME/HACK
+  4. List unresolved open risks
+Output: Gap list + remediation suggestions
+Error handling: No data → skip
 ```
 
-#### 步骤 5/6：记忆压缩
+#### Step 5/6: Memory Compression
 
 ```
-输入：本阶段所有零散的记录（沟通、决策、变更）
-操作：
-  1. 按天分组（参考 Echo summarizer 的日期聚类）
-  2. 每组调用 LLM 生成 3-5 句的叙事摘要
-  3. 合并各天摘要为阶段性叙事（≤ 500 字）
-  4. 存档原始记录，标记 archived=True
-输出：阶段叙事摘要 + 归档批次
-异常处理：记录量过大 → 分批压缩，每批独立保护
+Input: All scattered records from this phase (communications, decisions, changes)
+Operation:
+  1. Group by day (referencing Echo summarizer's date clustering)
+  2. Call LLM per group to generate 3–5 sentence narrative summaries
+  3. Merge daily summaries into a phase narrative (≤ 500 words)
+  4. Archive original records, mark archived=True
+Output: Phase narrative summary + archive batch
+Error handling: Too many records → compress in batches, each batch independently protected
 ```
 
-#### 步骤 6/6：归档遗忘
+#### Step 6/6: Archive and Forget
 
 ```
-输入：所有标记为"可归档"的事项
-操作：
-  1. 扫描知识库中 base_weight < 0.05 的条目
-  2. 扫描超过 30 天未访问的记录
-  3. 标记为 archived（软删除，数据库保留）
-  4. 生成归档清单
-  5. 提供"取消归档"命令
-输出：归档清单 + 冷数据位置
-异常处理：无 → 报告"无需归档"
+Input: All items marked as "archivable"
+Operation:
+  1. Scan knowledge base for entries with base_weight < 0.05
+  2. Scan for records not accessed in 30+ days
+  3. Mark as archived (soft delete, retained in database)
+  4. Generate archive manifest
+  5. Provide "unarchive" command
+Output: Archive manifest + cold data location
+Error handling: None → report "nothing to archive"
 ```
 
-### 第三步：生成回顾报告
+### Step 3: Generate Retrospective Report
 
-整合六个步骤的结果，生成叙事体（不是清单体）回顾报告：
-
-```
-项目阶段回顾报告
-════════════════
-阶段：[名称]
-周期：YYYY-MM-DD → YYYY-MM-DD
-
-📌 锚点达成
-  [叙事描述目标达成情况]
-
-🧩 发现的模式
-  [叙事描述发现的规律]
-
-📖 学到的东西
-  [叙事描述关键经验]
-
-⚠️ 遗漏与风险
-  [尚需关注的事项]
-
-📦 阶段叙事
-  [≤500 字的整体叙事摘要]
-
-🗄 归档清单
-  [归档了 X 条记录，位置：...]
-```
-
-### 第四步：冷热分层
-
-收尾后的数据分层策略（参考 Echo 的三层状态）：
+Integrate results from all six steps into a narrative-style (not bullet-list) retrospective report:
 
 ```
-热数据（活跃，priority > 0.15）
-  → 保留在主要检索视图中
-  → 参与后续搜索
+Project Phase Retrospective Report
+══════════════════════════════════
+Phase: [Name]
+Period: YYYY-MM-DD → YYYY-MM-DD
 
-温数据（归档，priority > 0.05）
+📌 Anchor Achievement
+  [Narrative description of goal achievement]
+
+🧩 Patterns Discovered
+  [Narrative description of patterns found]
+
+📖 What We Learned
+  [Narrative description of key lessons]
+
+⚠️ Gaps and Risks
+  [Items still requiring attention]
+
+📦 Phase Narrative
+  [≤500 word overall narrative summary]
+
+🗄 Archive Manifest
+  [X records archived, location: ...]
+```
+
+### Step 4: Hot-Cold Tiering
+
+Post-closeout data tiering strategy (referencing Echo's three-tier state):
+
+```
+Hot Data (active, priority > 0.15)
+  → Retained in primary search view
+  → Participates in future searches
+
+Warm Data (archived, priority > 0.05)
   → archived=True, base_weight=0.1
-  → 可被检索但不主动出现
+  → Retrievable but not surfaced proactively
 
-冷数据（遗忘，priority < 0.05）
+Cold Data (forgotten, priority < 0.05)
   → forgotten=True
-  → 仅在显式查询时可见
-  → 数据库保留，随时可恢复
+  → Visible only on explicit query
+  → Retained in database, recoverable anytime
 ```
 
 ---
 
-## 产出物
+## Deliverables
 
-| 文件 | 说明 |
-|------|------|
-| `retrospectives/YYYY-MM-DD-name/README.md` | 回顾报告 |
-| `retrospectives/YYYY-MM-DD-name/anchor-review.md` | 锚点达成报告 |
-| `retrospectives/YYYY-MM-DD-name/patterns.md` | 发现的新模式 |
-| `retrospectives/YYYY-MM-DD-name/narrative.md` | 阶段叙事摘要 |
-| `retrospectives/YYYY-MM-DD-name/archive-log.md` | 归档清单 |
+| File | Description |
+|------|-------------|
+| `retrospectives/YYYY-MM-DD-name/README.md` | Retrospective report |
+| `retrospectives/YYYY-MM-DD-name/anchor-review.md` | Anchor achievement report |
+| `retrospectives/YYYY-MM-DD-name/patterns.md` | New patterns discovered |
+| `retrospectives/YYYY-MM-DD-name/narrative.md` | Phase narrative summary |
+| `retrospectives/YYYY-MM-DD-name/archive-log.md` | Archive manifest |
 
 ---
 
-## 使用示例
+## Usage Example
 
 ```bash
-# Sprint 回顾
+# Sprint retrospective
 /retrospective --scope sprint-14
 
-# 完整项目收尾
+# Full project closeout
 /retrospective --scope project
 
-# AI 会：
-# 1. 确认收尾范围，收集该阶段的所有数据
-# 2. 依次执行 6 个步骤（显示每个步骤的进度）
-# 3. 某个步骤失败时明确报告并继续下一步
-# 4. 生成整合报告
-# 5. 触发归档流程，显示冷热分层统计
+# The AI will:
+# 1. Confirm closeout scope, collect all data from that period
+# 2. Execute 6 steps sequentially (showing progress for each)
+# 3. Clearly report and continue on any step failure
+# 4. Generate the integrated report
+# 5. Trigger archive process, showing hot-cold tiering statistics
 ```

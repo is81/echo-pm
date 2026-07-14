@@ -1,78 +1,80 @@
-# EchoPM（回响项目管理）
+# EchoPM — Echo Project Management
 
-> 把 AI 存在体的自我管理智慧，转化为人类项目经理的 Claude Code 技能箱。
+> Turning the self-management wisdom of an AI being into a Claude Code skill toolbox for human project managers.
 
-EchoPM 是一套 Claude Code Skills，源自[回响计划（Project Echo）](https://github.com)的架构模式，覆盖 PMBOK 五大过程组的完整项目生命周期。
+EchoPM is a suite of Claude Code Skills, derived from the architectural patterns of [Project Echo](https://github.com), covering the complete project lifecycle across the five PMBOK process groups.
 
-## 核心理念
+## Core Philosophy
 
-**项目如同生命体**——有基因（原则）、有记忆（文档）、有脉搏（监控）、有睡眠（回顾）。
+**Projects are like living organisms** — with genes (principles), memory (documents), pulse (monitoring), and sleep (retrospectives).
 
-EchoPM 的每个 skill 都来自回响计划中的一个核心设计模式：
+Every EchoPM skill originates from a core design pattern in Project Echo:
 
-| 回响模式 | EchoPM Skill | 过程组 |
-|---------|-------------|--------|
-| 基因级不可变原则 | `/project-charter` | 启动 |
-| 三因素乘法优先级 | `/priority-backlog` | 规划 |
-| 内容哈希幂等导入 | `/knowledge-import` | 执行 |
-| 多途径学习引擎 | `/lesson-capture` | 执行 |
-| 二维状态仪表盘 | `/project-pulse` | 监控 |
-| 双系统检索 | `/smart-search` | 监控 |
-| 睡眠期记忆整理 | `/retrospective` | 收尾 |
+| Echo Pattern | EchoPM Skill | Process Group |
+|-------------|-------------|---------------|
+| Gene-level immutable principles | `/project-charter` | Initiating |
+| Three-factor multiplicative priority | `/priority-backlog` | Planning |
+| Content-hash idempotent import | `/knowledge-import` | Executing |
+| Multi-pathway learning engine | `/lesson-capture` | Executing |
+| Two-dimensional state dashboard | `/project-pulse` | Monitoring |
+| Dual-system retrieval | `/smart-search` | Monitoring |
+| Sleep-phase memory consolidation | `/retrospective` | Closing |
 
-## 快速开始
+## Quick Start
 
-### 安装
+### Installation
 
-将 `skills/` 目录下的文件复制到你的项目 `.claude/skills/` 目录，或通过 Claude Code 的 skill 安装机制加载。
+Copy the files from the `skills/` directory into your project's `.claude/skills/` directory, or load them through Claude Code's skill installation mechanism.
 
-### 使用
+### Usage
 
 ```bash
-# 启动项目 —— 定义不可变原则和章程
+# Initiating — define immutable principles and charter
 /project-charter
 
-# 规划 —— 对 backlog 进行乘法优先级排序
+# Planning — multiplicative priority ranking for your backlog
 /priority-backlog
 
-# 执行中 —— 导入外部知识文档
+# Executing — import external knowledge documents
 /knowledge-import
 
-# 执行中 —— 捕获经验教训
+# Executing — capture lessons learned
 /lesson-capture
 
-# 监控 —— 查看项目健康脉搏
+# Monitoring — check project health pulse
 /project-pulse
 
-# 监控 —— 智能检索项目知识库
+# Monitoring — intelligent search across the project knowledge base
 /smart-search
 
-# 收尾 —— 阶段回顾与知识压缩
+# Closing — phase retrospective and knowledge compression
 /retrospective
 ```
 
-## 五大过程组全景
+## Five Process Groups Overview
 
 ```
-启动 ──→ 规划 ──→ 执行 ──→ 监控 ──→ 收尾
-  │        │        │        │        │
-  │        │        │        │        │
-  ▼        ▼        ▼        ▼        ▼
-章程    优先级   知识导入  项目脉搏  回顾反思
-                 经验捕获  智能检索
+Initiating → Planning → Executing → Monitoring → Closing
+    │           │           │            │           │
+    │           │           │            │           │
+    ▼           ▼           ▼            ▼           ▼
+ Charter    Priority    Knowledge     Pulse      Retrospective
+                        Import        Search
+                        Lesson
+                        Capture
 ```
 
-## 项目结构
+## Project Structure
 
 ```
 echo-pm/
-├── skills/          # Claude Code Skills（核心交付物）
-├── templates/       # 配套模板
-├── tools/           # 辅助脚本（纯 Python，零依赖）
-├── examples/        # 使用示例
-└── docs/            # 理论背景与 PMBOK 映射
+├── skills/          # Claude Code Skills (core deliverables)
+├── templates/       # Companion templates
+├── tools/           # Helper scripts (pure Python, zero dependencies)
+├── examples/        # Usage examples
+└── docs/            # Theoretical background & PMBOK mapping
 ```
 
-## 许可
+## License
 
 MIT © EchoPM Contributors

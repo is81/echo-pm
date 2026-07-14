@@ -1,57 +1,57 @@
-# 项目脉搏仪表盘
+# Project Pulse Dashboard
 
-> 更新频率：每日 / 每次 `/project-pulse` 调用
-> 数据源：git log, PR activity, 手动信号输入
-
----
-
-## 当前状态
-
-| 指标 | 当前值 | 上周 | 趋势 |
-|------|--------|------|------|
-| Valence（士气） | | | — |
-| Arousal（活动强度） | | | — |
-| 健康区 | | | — |
-| 活跃事项数 | | | — |
-| 本周合并 PR | | | — |
+> Update frequency: Daily / per `/project-pulse` invocation
+> Data sources: git log, PR activity, manual signal input
 
 ---
 
-## 趋势图
+## Current Status
+
+| Metric | Current | Last Week | Trend |
+|--------|---------|-----------|-------|
+| Valence (Morale) | | | — |
+| Arousal (Activity Intensity) | | | — |
+| Health Zone | | | — |
+| Active Items | | | — |
+| PRs Merged This Week | | | — |
+
+---
+
+## Trend Chart
 
 ```
 Valence
 +1.0 │
      │
-  0  │──────────────────── 基线
+  0  │──────────────────── Baseline
      │
 -1.0 │
-     └────────────────────────── 时间 →
+     └────────────────────────── Time →
 
 Arousal
  1.0 │
      │
- 0.3 │──────────────────── 基线
+ 0.3 │──────────────────── Baseline
      │
  0.0 │
-     └────────────────────────── 时间 →
+     └────────────────────────── Time →
 ```
 
 ---
 
-## 信号日志
+## Signal Log
 
-| 时间 | 事件 | V Δ | A Δ |
-|------|------|-----|-----|
+| Time | Event | V Δ | A Δ |
+|------|-------|-----|-----|
 | | | | |
 | | | | |
 
 ---
 
-## 告警规则
+## Alert Rules
 
-| 条件 | 状态 | 上次触发 |
-|------|------|---------|
-| V < -0.3 持续 7 天 | ✅ 正常 | — |
-| A > 0.8 持续 3 天 | ✅ 正常 | — |
-| V < -0.3 AND A < 0.1 持续 5 天 | ✅ 正常 | — |
+| Condition | Status | Last Triggered |
+|-----------|--------|----------------|
+| V < -0.3 sustained for 7 days | ✅ Normal | — |
+| A > 0.8 sustained for 3 days | ✅ Normal | — |
+| V < -0.3 AND A < 0.1 sustained for 5 days | ✅ Normal | — |

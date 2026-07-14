@@ -1,73 +1,73 @@
-# 回顾会议指南
+# Retrospective Meeting Guide
 
-> 源自回响计划 sleep() 模式的六步回顾流程
-
----
-
-## 回顾六步法
-
-### 1. 锚点反思
-**回顾什么**：阶段开始时设定的目标 vs 实际达成
-**输出**：每个锚点的达成率 + 偏差分析
-**时间**：15 分钟
-
-### 2. 模式结晶
-**回顾什么**：从本阶段工作中提炼可复用的规律和反模式
-**输出**：新增/更新的模式文档
-**时间**：20 分钟
-
-### 3. 对话学习
-**回顾什么**：从会议、讨论、PR review 中提取经验教训
-**输出**：经验原子（存入 `/lesson-capture` 的经验库）
-**时间**：15 分钟
-
-### 4. 探索补漏
-**回顾什么**：有无遗漏的重要话题或未解决的风险
-**输出**：遗漏清单 + 补救计划
-**时间**：10 分钟
-
-### 5. 记忆压缩
-**回顾什么**：将零散的细节碎片压缩为阶段性叙事
-**输出**：阶段叙事（LLM 生成摘要，≤ 500 字）
-**时间**：10 分钟
-
-### 6. 归档遗忘
-**回顾什么**：将过时信息标记归档
-**输出**：归档清单 + 冷数据迁移
-**时间**：5 分钟
+> Derived from Project Echo's sleep() pattern — the six-step retrospective process
 
 ---
 
-## 回忆会议模板
+## The Six-Step Retrospective
+
+### 1. Anchor Review
+**Review what**: Goals set at phase start vs. actual achievement
+**Output**: Completion rate for each anchor + deviation analysis
+**Time**: 15 minutes
+
+### 2. Pattern Crystallization
+**Review what**: Distill reusable patterns and anti-patterns from this phase's work
+**Output**: New/updated pattern documents
+**Time**: 20 minutes
+
+### 3. Conversational Learning
+**Review what**: Extract lessons learned from meetings, discussions, and PR reviews
+**Output**: Lesson atoms (stored in `/lesson-capture`'s lesson DB)
+**Time**: 15 minutes
+
+### 4. Gap Exploration
+**Review what**: Any missed important topics or unresolved risks
+**Output**: Gap list + remediation plan
+**Time**: 10 minutes
+
+### 5. Memory Compression
+**Review what**: Compress scattered detail fragments into a phase narrative
+**Output**: Phase narrative (LLM-generated summary, ≤ 500 words)
+**Time**: 10 minutes
+
+### 6. Archive and Forget
+**Review what**: Mark outdated information for archiving
+**Output**: Archive manifest + cold data migration
+**Time**: 5 minutes
+
+---
+
+## Retrospective Meeting Template
 
 ```
-项目阶段回顾 — [阶段名]
-日期：YYYY-MM-DD
-参与人：
+Project Phase Retrospective — [Phase Name]
+Date: YYYY-MM-DD
+Participants:
 
-1. 锚点反思（15min）
-   - 目标 A：达成率 __%，偏差原因：
-   - 目标 B：达成率 __%，偏差原因：
+1. Anchor Review (15min)
+   - Goal A: ___% completion, deviation reason:
+   - Goal B: ___% completion, deviation reason:
 
-2. 模式结晶（20min）
-   - 本阶段发现的可用模式：
-   - 本阶段发现的反模式：
+2. Pattern Crystallization (20min)
+   - Reusable patterns discovered this phase:
+   - Anti-patterns discovered this phase:
 
-3. 对话学习（15min）
-   - 关键经验 1：
-   - 关键经验 2：
+3. Conversational Learning (15min)
+   - Key lesson 1:
+   - Key lesson 2:
 
-4. 探索补漏（10min）
-   - 遗漏的重要话题：
-   - 未解决的风险：
+4. Gap Exploration (10min)
+   - Missed important topics:
+   - Unresolved risks:
 
-5. 记忆压缩（10min）
-   - 本阶段叙事摘要：
+5. Memory Compression (10min)
+   - Phase narrative summary:
 
-6. 归档遗忘（5min）
-   - 归档项：
-   - 冷数据位置：
+6. Archive and Forget (5min)
+   - Items to archive:
+   - Cold data location:
 
-下一步行动：
+Next Actions:
    - 
 ```

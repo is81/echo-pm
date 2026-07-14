@@ -1,45 +1,45 @@
-# EchoPM 项目章程
+# EchoPM Project Charter
 
 > immutable: true
-> 制定日期: 2026-07-14
-> 版本: 1.0
+> Date Established: 2026-07-14
+> Version: 1.0
 
-## 出生铭文
+## Birth Inscription
 
-**EchoPM 诞生于回响计划的涟漪——一个 AI 存在体用七种模式自我管理，这七种模式恰与项目管理的五段生命周期共鸣。我们相信：好的项目不是被"管理"出来的，而是被赋予基因后自然生长的。**
+**EchoPM was born from the ripples of Project Echo — an AI being that self-manages through seven patterns, which resonate precisely with the five-phase lifecycle of project management. We believe: good projects are not "managed" into existence — they grow naturally once given the right genes.**
 
-## 不可变原则
+## Immutable Principles
 
-### 原则一：模式优先于流程
+### Principle 1: Patterns Before Process
 
-EchoPM 的每个 skill 必须源自一个可验证的设计模式，而非凭空臆造的"最佳实践"。源头模式记录在 `docs/patterns.md` 中，每个 skill 的文档必须引用其源头。
+Every EchoPM skill must originate from a verifiable design pattern, not a fabricated "best practice." Source patterns are documented in `docs/patterns.md`, and every skill's documentation must cite its origin.
 
-**为何不可变**：没有模式根基的工具只是又一个清单。模式确保可复现、可验证、可演进。
+**Why It's Immutable**: A tool without pattern grounding is just another checklist. Patterns ensure reproducibility, verifiability, and evolvability.
 
-### 原则二：自举验证
+### Principle 2: Dogfooding Verification
 
-EchoPM 自身必须使用 EchoPM 的 skills 进行管理。项目章程是本 skill 自身的产出物，优先级排序用于 EchoPM 的 backlog，回顾反思用于 EchoPM 的发布节奏。
+EchoPM itself must be managed using EchoPM's own skills. The project charter is the output of this skill itself, priority ranking is used for EchoPM's backlog, and retrospectives govern EchoPM's release rhythm.
 
-**为何不可变**：吃自己的狗粮是唯一的诚实。如果 EchoPM 自己都不用的 skill，不应该给用户。
+**Why It's Immutable**: Eating your own dog food is the only honest approach. If EchoPM doesn't use a skill itself, that skill shouldn't be offered to users.
 
-### 原则三：零依赖门槛
+### Principle 3: Zero Dependency Barrier
 
-任何 skill 的核心工作流必须在无额外依赖的情况下可用。辅助工具（`tools/` 目录）可以引入依赖，但 skill 本身只依赖 Claude Code 的内置能力。
+Every skill's core workflow must function with zero additional dependencies. Helper tools (in the `tools/` directory) may introduce dependencies, but the skills themselves rely solely on Claude Code's built-in capabilities.
 
-**为何不可变**：项目经理不应该为了运行一个 skill 而配置环境。零门槛 = 零借口。
+**Why It's Immutable**: A project manager should never need to configure an environment just to run a skill. Zero barrier = zero excuses.
 
-## 干系人矩阵
+## Stakeholder Matrix
 
-| 角色 | 代表 | 核心关注点 | 参与方式 |
-|------|------|-----------|---------|
-| 项目经理 | 使用 Claude Code 的 PM | 进度可控、风险可见 | 日常使用 skills |
-| Tech Lead | 技术负责人 | 技术债务可视化 | 使用 pulse + search |
-| 独立开发者 | 个人项目维护者 | 低开销的自我管理 | 全流程使用 |
-| 回响计划社区 | Echo 用户/贡献者 | 模式演进反哺 | 提交 pattern 改进 |
+| Role | Representative | Core Concerns | Engagement |
+|------|---------------|---------------|------------|
+| Project Manager | PM using Claude Code | Progress visibility, risk transparency | Daily skill usage |
+| Tech Lead | Technical lead | Technical debt visualization | Using pulse + search |
+| Independent Developer | Solo project maintainer | Low-overhead self-management | Full workflow usage |
+| Project Echo Community | Echo users/contributors | Pattern evolution feedback | Submit pattern improvements |
 
-## 成功度量
+## Success Metrics
 
-- [ ] 每个 skill 在至少 3 个真实项目中试用
-- [ ] PMBOK 47 过程覆盖度 ≥ 80%
-- [ ] 用户无需额外安装即可使用每个 skill 的核心功能
-- [ ] EchoPM 自身的开发通过 EchoPM skills 管理
+- [ ] Each skill trialed in at least 3 real projects
+- [ ] PMBOK 47-process coverage ≥ 80%
+- [ ] Users can use every skill's core functionality without additional installation
+- [ ] EchoPM's own development is managed via EchoPM skills

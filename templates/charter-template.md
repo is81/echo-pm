@@ -1,60 +1,60 @@
-# [项目名] 项目章程
+# [Project Name] Project Charter
 
 > immutable: true
-> 制定日期: YYYY-MM-DD
-> 版本: 1.0
-> 制定人: [姓名/角色]
+> Date Established: YYYY-MM-DD
+> Version: 1.0
+> Author: [Name/Role]
 
 ---
 
-## 出生铭文
+## Birth Inscription
 
-<!-- 不超过 100 字的项目起源叙事。回答：为什么存在？为什么是这个团队？为什么是现在？ -->
+<!-- An origin narrative of no more than 100 words. Answer: Why does it exist? Why this team? Why now? -->
 
-> [一段话]
-
----
-
-## 不可变原则
-
-<!-- 3-5 条。问自己：10 年后还在运行的规则是什么？ -->
-
-### 原则一：[名称]
-
-**[一句话表述]**
-
-**为何不可变**：[解释原因，这比原则本身更重要]
+> [One paragraph]
 
 ---
 
-### 原则二：[名称]
+## Immutable Principles
 
-**[一句话表述]**
+<!-- 3–5 items. Ask yourself: What rules must still be running 10 years from now? -->
 
-**为何不可变**：[解释原因]
+### Principle 1: [Name]
 
----
+**[One-sentence statement]**
 
-### 原则三：[名称]
-
-**[一句话表述]**
-
-**为何不可变**：[解释原因]
+**Why It's Immutable**: [Explain the reason — this is more important than the principle itself]
 
 ---
 
-## 干系人矩阵
+### Principle 2: [Name]
 
-| 角色 | 代表 | 关注点 | 参与方式 | 影响力 | 兴趣度 |
-|------|------|--------|---------|--------|--------|
-| | | | | 高/中/低 | 高/中/低 |
+**[One-sentence statement]**
+
+**Why It's Immutable**: [Explain the reason]
+
+---
+
+### Principle 3: [Name]
+
+**[One-sentence statement]**
+
+**Why It's Immutable**: [Explain the reason]
+
+---
+
+## Stakeholder Matrix
+
+| Role | Representative | Concerns | Engagement | Influence | Interest |
+|------|---------------|----------|------------|-----------|----------|
+| | | | | High/Med/Low | High/Med/Low |
 | | | | | | |
 
 ---
 
-## 成功度量
+## Success Metrics
 
-<!-- 3-5 个可量化指标 -->
+<!-- 3–5 quantifiable indicators -->
 
 - [ ] 
 - [ ] 
@@ -62,8 +62,8 @@
 
 ---
 
-## 变更记录
+## Change Log
 
-| 日期 | 版本 | 变更内容 | 审批人 |
-|------|------|---------|--------|
+| Date | Version | Change Description | Approver |
+|------|---------|-------------------|----------|
 | | | | |

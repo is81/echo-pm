@@ -1,53 +1,53 @@
-# CLAUDE.md — EchoPM 项目指南
+# CLAUDE.md — EchoPM Project Guide
 
-## 项目概述
+## Project Overview
 
-EchoPM（回响项目管理）是一套 Claude Code Skills，将回响计划（Project Echo）的设计模式抽象为覆盖 PMBOK 五大过程组的项目管理工具。核心理念：项目如同生命体——有基因、有记忆、有脉搏、有睡眠。
+EchoPM (Echo Project Management) is a suite of Claude Code Skills that abstracts Project Echo's design patterns into project management tools covering all five PMBOK process groups. Core philosophy: projects are like living organisms — with genes, memory, pulse, and sleep.
 
-## 项目结构
+## Project Structure
 
 ```
 echo-pm/
-├── skills/          # Claude Code Skills（核心交付物，7 个 .md 文件）
-├── templates/       # 配套模板（章程模板、原则 YAML、仪表盘等）
-├── tools/           # 辅助 Python 脚本（零外部依赖）
-├── examples/        # 使用示例（dogfooding 记录 + 示例项目）
-└── docs/            # 理论文档（模式详解 + PMBOK 映射 + FAQ）
+├── skills/          # Claude Code Skills (core deliverables, 7 .md files)
+├── templates/       # Companion templates (charter template, principles YAML, dashboard, etc.)
+├── tools/           # Helper Python scripts (zero external dependencies)
+├── examples/        # Usage examples (dogfooding records + sample projects)
+└── docs/            # Theoretical docs (pattern details + PMBOK mapping + FAQ)
 ```
 
-## Skill 开发规范
+## Skill Development Standards
 
-每个 skill 文件必须包含以下章节：
-1. **触发条件**：何时自动激活
-2. **对齐 PMBOK**：映射的过程编号和名称
-3. **源自回响**：引用的 Project Echo 具体模式和源文件
-4. **工作流**：分步骤的具体操作
-5. **产出物**：skill 运行后生成的文件
-6. **示例**：至少一个使用场景
+Every skill file must include the following sections:
+1. **Trigger Conditions**: When to auto-activate
+2. **PMBOK Alignment**: Mapped process numbers and names
+3. **Echo Origins**: Specific Project Echo patterns and source files referenced
+4. **Workflow**: Step-by-step concrete operations
+5. **Deliverables**: Files generated after the skill runs
+6. **Examples**: At least one usage scenario
 
-## 关键约束
+## Key Constraints
 
-- Skill 核心功能零外部依赖（只用 Claude Code 内置能力）
-- `tools/` 下的辅助脚本可以引入依赖，但必须在文件头部注释说明
-- 每个 skill 必须引用回响计划的源文件作为模式出处
-- 自身使用 EchoPM skills 管理开发（dogfooding）
+- Skill core functionality has zero external dependencies (uses only Claude Code built-in capabilities)
+- Helper scripts under `tools/` may introduce dependencies, but must document them in the file header comments
+- Every skill must reference Project Echo source files as its pattern origin
+- EchoPM manages its own development using EchoPM skills (dogfooding)
 
-## 常用命令
+## Common Commands
 
 ```bash
-# 验证所有 skill 文件结构完整
+# Verify all skill files have complete structure
 grep -l "^## " skills/*.md
 
-# 检查 PMBOK 覆盖率
+# Check PMBOK coverage
 python tools/check_coverage.py
 ```
 
-## 相关项目
+## Related Projects
 
-- 回响计划（Project Echo）：`F:\Project Echo` —— 模式源头
-- 本项目的所有模式提取自 Echo 的以下文件：
-  - `src/echo/memory/models.py` — 三因素优先级公式
-  - `src/echo/agent/core.py` — 睡眠维护 + 双系统检索
-  - `src/echo/memory/store.py` — 幂等导入管道
-  - `config/principles.yaml` — 不可变原则
-  - `src/echo/zim_ingest.py` — 多策略导入管道
+- Project Echo: `F:\Project Echo` — The pattern source
+- All patterns in this project are extracted from Echo's following files:
+  - `src/echo/memory/models.py` — Three-factor priority formula
+  - `src/echo/agent/core.py` — Sleep maintenance + dual-system retrieval
+  - `src/echo/memory/store.py` — Idempotent import pipeline
+  - `config/principles.yaml` — Immutable principles
+  - `src/echo/zim_ingest.py` — Multi-strategy import pipeline

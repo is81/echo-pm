@@ -1,142 +1,142 @@
-# /lesson-capture — 经验捕获
+# /lesson-capture — Lesson Capture
 
-## 触发条件
+## Trigger Conditions
 
-当用户说"记录经验"、"学到了什么"、"踩坑记录"、"lesson learned"、"知识沉淀"、"总结经验"、"复盘"、"这个坑要记住"、"记录下来"时激活。
+Activate when the user says "record lessons", "what did we learn", "pitfalls log", "lesson learned", "knowledge deposition", "summarize experience", "postmortem", "remember this pitfall", "write this down".
 
-## 对齐 PMBOK
+## PMBOK Alignment
 
-- **9.3 管理项目团队**：团队经验需要被捕获和传递
-- **13.3 管理干系人参与**：干系人反馈转化为可追溯的经验
-- **8.2 实施质量保证**：经验教训转化为质量改进措施
+- **9.3 Manage Project Team**: Team experience needs to be captured and transmitted
+- **13.3 Manage Stakeholder Engagement**: Stakeholder feedback converted into traceable lessons
+- **8.2 Perform Quality Assurance**: Lessons learned converted into quality improvement measures
 
-## 源自回响
+## Echo Origins
 
-Project Echo 的三途径学习引擎（详见 `docs/patterns.md`）：
+Project Echo's three-pathway learning engine (see `docs/patterns.md` for details):
 
-- `src/echo/agent/core.py` L686-804：三个独立学习途径共享一个 `_extract_knowledge()` 引擎
-- 对话反思（`_learn_from_conversations`）：从讨论中提取事实性知识
-- 工具习得（inline in `respond_stream`）：从工具执行结果中提取知识
-- 自主探索（`_explore_and_learn`）：主动搜索新知识
-- 每个来源有不同的 base_weight（0.4 / 0.45 / 0.35）
+- `src/echo/agent/core.py` L686-804: Three independent learning pathways sharing one `_extract_knowledge()` engine
+- Conversational reflection (`_learn_from_conversations`): Extract factual knowledge from discussions
+- Tool learning (inline in `respond_stream`): Extract knowledge from tool execution results
+- Autonomous exploration (`_explore_and_learn`): Proactively search for new knowledge
+- Each source has a different base_weight (0.4 / 0.45 / 0.35)
 
-核心洞察：**多样化的输入源共用一套低温度提取引擎，每条经验是独立的可检索原子，而非一大块难以定位的文档。**
+Core insight: **Diverse input sources share a single low-temperature extraction engine. Each lesson is an independent, retrievable atom — not a monolithic document that's hard to pinpoint.**
 
 ---
 
-## 工作流
+## Workflow
 
-### 第一步：设立三条经验捕获通道
+### Step 1: Establish Three Lesson Capture Channels
 
-#### 通道 A — 对话反思 📝
+#### Channel A — Conversational Reflection 📝
 
-**触发时机**：每日结束时、Sprint 结束时、或有重要讨论发生后
+**Trigger timing**: End of day, end of sprint, or after significant discussions
 
-**捕获对象**：
-- 会议中的关键决策及原因
-- 技术讨论中的 trade-off 推理
-- 需求澄清中的隐含假设
-- 冲突解决的方案和过程
+**Capture targets**:
+- Key decisions from meetings and their rationale
+- Trade-off reasoning from technical discussions
+- Implicit assumptions from requirement clarifications
+- Conflict resolution approaches and processes
 
-**权重**：0.4（日常高频，单条影响力较小）
+**Weight**: 0.4 (high frequency, lower per-item influence)
 
-#### 通道 B — 工具/实践习得 🔧
+#### Channel B — Tool/Practice Learning 🔧
 
-**触发时机**：即时触发——踩坑后立刻记录
+**Trigger timing**: Immediate — record right after stepping on a rake
 
-**捕获对象**：
-- 配置/环境问题及解决步骤
-- API 的隐藏限制
-- 工具链的最佳实践
-- 调试过程中发现的非文档化行为
+**Capture targets**:
+- Configuration/environment issues and resolution steps
+- Hidden API limitations
+- Toolchain best practices
+- Undocumented behavior discovered during debugging
 
-**权重**：0.45（实践出真知，权重略高）
+**Weight**: 0.45 (practice yields truth, slightly higher weight)
 
-#### 通道 C — 主动探索 🔍
+#### Channel C — Autonomous Exploration 🔍
 
-**触发时机**：定期（每周/每 Sprint），避免超过 8 小时的冷却期
+**Trigger timing**: Periodic (weekly/per sprint), avoid exceeding 8-hour cooldown
 
-**捕获对象**：
-- 从项目进展中识别出的值得深挖的技术话题
-- 未解决的风险信号
-- 团队忽略但可能重要的趋势
-- 竞品/行业动态中的可借鉴点
+**Capture targets**:
+- Technical topics worth deep-diving, identified from project progress
+- Unresolved risk signals
+- Trends the team ignores but may be important
+- Learnable points from competitor/industry movements
 
-**权重**：0.35（主动探索的信号强度不如直接经验）
+**Weight**: 0.35 (autonomous exploration signals are weaker than direct experience)
 
-### 第二步：运行共享知识提取引擎
+### Step 2: Run the Shared Knowledge Extraction Engine
 
-三条通道捕获的原始文本，统一送入提取引擎：
+Raw text captured from all three channels is fed into a unified extraction engine:
 
-**提取规则**（对应 Echo 的 `_extract_knowledge()`）：
-1. 使用 LLM 在低温（0.1-0.2）下运行，追求事实而非创意
-2. 输出格式：每条经验一段，独立完整，不依赖上下文
-3. 每条经验 ≤ 200 字（确保可检索粒度）
-4. 数量上限：对话反思 ≤ 8 条/次，工具习得 ≤ 3 条/次，主动探索 ≤ 5 条/次
+**Extraction rules** (mapping to Echo's `_extract_knowledge()`):
+1. Run LLM at low temperature (0.1–0.2), pursuing facts over creativity
+2. Output format: one lesson per line, self-contained, no context dependency
+3. Each lesson ≤ 200 words (ensuring retrievable granularity)
+4. Quantity caps: conversational reflection ≤ 8 per session, tool learning ≤ 3 per session, autonomous exploration ≤ 5 per session
 
 ```
-系统提示：
-你是一个项目经验提取器。从以下文本中提取独立的、事实性的经验教训。
-每条经验必须是自包含的（脱离上下文仍可理解）。
-不要复述过程，只提取"学到了什么"。
-格式：每条经验一行，以"- "开头。
+System prompt:
+You are a project lesson extractor. Extract standalone, factual lessons learned from the following text.
+Each lesson must be self-contained (understandable without context).
+Do not retell the process — extract only "what was learned".
+Format: one lesson per line, starting with "- ".
 ```
 
-### 第三步：标记来源和权重
+### Step 3: Tag Source and Weight
 
-提取出的每条经验标注：
+Each extracted lesson is annotated with:
 
 ```yaml
 source: "reflection" | "practice" | "exploration"
-tags: ["lesson-learned", "技术决策", "2026-Q3"]
+tags: ["lesson-learned", "technical-decision", "2026-Q3"]
 base_weight: 0.4 | 0.45 | 0.35
 extracted_at: "2026-07-14T15:30:00"
 related_to: ["module-name", "decision-id"]
 ```
 
-### 第四步：去重入库
+### Step 4: Deduplicate and Store
 
-使用 `content_hash` 去重（与 `/knowledge-import` 共用同一套去重基础设施）：
+Use `content_hash` for deduplication (sharing the same dedup infrastructure as `/knowledge-import`):
 
-- 相同经验被重复捕获 → INSERT OR IGNORE 静默跳过
-- 相似但不完全相同的经验 → 保留两条（它们的细微差异可能有价值）
+- Same lesson captured repeatedly → INSERT OR IGNORE silently skips
+- Similar but not identical lessons → keep both (their subtle differences may be valuable)
 
-### 第五步：定期回顾整合
+### Step 5: Periodic Review and Consolidation
 
-每周/每 Sprint 结束时：
-1. 列出本周捕获的所有新经验
-2. 用 LLM 识别重复或冲突的经验
-3. 将有足够证据的经验升级权重（`base_weight += 0.1`）
-4. 将过时的经验标记为 `archived=True`（软删除）
-
----
-
-## 产出物
-
-| 文件 | 说明 |
-|------|------|
-| `LESSONS.md` | 经验库索引（按时间和模块组织） |
-| `tools/capture.py` | 经验捕获助手（调用 LLM 提取 + 入库） |
-| 经验库（SQLite） | 与知识导入共用 `knowledge_base` 表 |
+At the end of each week/sprint:
+1. List all new lessons captured this period
+2. Use LLM to identify duplicate or conflicting lessons
+3. Upgrade weight for lessons with sufficient evidence (`base_weight += 0.1`)
+4. Mark outdated lessons as `archived=True` (soft delete)
 
 ---
 
-## 使用示例
+## Deliverables
+
+| File | Description |
+|------|-------------|
+| `LESSONS.md` | Lesson library index (organized by time and module) |
+| `tools/capture.py` | Lesson capture helper (invokes LLM extraction + storage) |
+| Lesson DB (SQLite) | Shares the `knowledge_base` table with knowledge import |
+
+---
+
+## Usage Example
 
 ```bash
-# 每日收尾
+# End-of-day wrap-up
 /lesson-capture --channel reflection --input today-notes.md
 
-# 即时踩坑记录
-/lesson-capture --channel practice --input "K8s 部署时 PVC 不释放的解决方法..."
+# Immediate pitfall recording
+/lesson-capture --channel practice --input "How we solved the K8s PVC not releasing issue..."
 
-# 每周探索
+# Weekly exploration
 /lesson-capture --channel exploration
 
-# AI 会：
-# 1. 读取输入文本
-# 2. 调用 LLM 低温提取经验原子
-# 3. 去重后写入经验库
-# 4. 输出"本次捕获 5 条新经验，3 条重复跳过"
-# 5. 如果多条经验指向同一模式，提示"建议整合为一个模式文档"
+# The AI will:
+# 1. Read the input text
+# 2. Call LLM at low temperature to extract lesson atoms
+# 3. Deduplicate and write to lesson DB
+# 4. Output "Captured 5 new lessons, 3 duplicates skipped this session"
+# 5. If multiple lessons point to the same pattern, suggest "Consider consolidating into a pattern document"
 ```

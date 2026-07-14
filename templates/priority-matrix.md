@@ -1,31 +1,31 @@
-# 优先级评分矩阵
+# Priority Scoring Matrix
 
-## 公式
+## Formula
 
 ```
 P = W_base × f_value × f_urgency × f_feasibility × f_recency
 ```
 
-## 当前维度定义
+## Current Dimension Definitions
 
-| 因子 | 含义 | 公式 | 范围 |
-|------|------|------|------|
-| `W_base` | 基础权重 | 起始 0.5，每次被引用 +0.02（上限 1.0） | [0.05, 1.0] |
-| `f_value` | 业务价值 | `1.0 + value_score × 0.3` | [1.0, 1.3] |
-| `f_urgency` | 紧迫性 | `1.0 + deadline_proximity × 0.4` | [1.0, 1.4] |
-| `f_feasibility` | 可行性 | `0.5 + feasibility_score × 0.5` | [0.5, 1.0] |
-| `f_recency` | 新鲜度 | `0.5 ^ (days_since_access / half_life_days)` | [0.0, 1.0] |
+| Factor | Meaning | Formula | Range |
+|--------|---------|---------|-------|
+| `W_base` | Base weight | Starts at 0.5, +0.02 per reference (cap 1.0) | [0.05, 1.0] |
+| `f_value` | Business value | `1.0 + value_score × 0.3` | [1.0, 1.3] |
+| `f_urgency` | Urgency | `1.0 + deadline_proximity × 0.4` | [1.0, 1.4] |
+| `f_feasibility` | Feasibility | `0.5 + feasibility_score × 0.5` | [0.5, 1.0] |
+| `f_recency` | Recency | `0.5 ^ (days_since_access / half_life_days)` | [0.0, 1.0] |
 
-## 阈值
+## Thresholds
 
-- **遗忘阈值**：P < 0.05 → 自动归档（软删除）
-- **关注阈值**：P < 0.15 → 标记"需关注"
-- **高优先**：P > 0.70 → 进入 Top-N 视图
+- **Forget threshold**: P < 0.05 → Auto-archive (soft delete)
+- **Attention threshold**: P < 0.15 → Flag as "needs attention"
+- **High priority**: P > 0.70 → Enter Top-N view
 
-## 参数调优表
+## Parameter Tuning Table
 
-| 参数 | 默认值 | 调高意味着 | 调低意味着 |
-|------|--------|-----------|-----------|
-| `half_life_days` | 7 | 事项存活更久 | 事项衰减更快 |
-| `base_weight` | 0.5 | 新事项初始优先级高 | 新事项需更多验证 |
-| `forget_threshold` | 0.05 | 更少归档 | 更多归档 |
+| Parameter | Default | Raising it means | Lowering it means |
+|-----------|---------|-----------------|-------------------|
+| `half_life_days` | 7 | Items survive longer | Items decay faster |
+| `base_weight` | 0.5 | New items start with higher priority | New items need more validation |
+| `forget_threshold` | 0.05 | Fewer items archived | More items archived |

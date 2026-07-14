@@ -1,101 +1,101 @@
-# EchoPM 自举记录（Dogfooding）
+# EchoPM Dogfooding Record
 
-> "吃自己的狗粮"（Dogfooding）是 EchoPM 的第二条不可变原则。
-> 本文档记录 EchoPM 项目自身使用 EchoPM skills 的过程和产出。
-
----
-
-## 项目章程生成
-
-**调用**：`/project-charter`
-
-**产出**：`CHARTER.md` — 3 条不可变原则 + 出生铭文 + 干系人矩阵
-
-**反思**：
-- 第 1 条原则"模式优先于流程"来自 `/project-charter` 对 Echo `principles.yaml` 的引用——它迫使我们把每个 skill 的模式源头写清楚
-- 第 3 条原则"零依赖门槛"是在编写 `tools/` 的辅助脚本时自然浮现的——我们发现 `hashlib` + `sqlite3` + `json` 足以完成所有辅助功能
+> "Eating your own dog food" (Dogfooding) is EchoPM's second immutable principle.
+> This document records the process and outputs of EchoPM's own use of EchoPM skills.
 
 ---
 
-## 优先级排序
+## Project Charter Generation
 
-**调用**：`/priority-backlog`
+**Invoked**: `/project-charter`
 
-**排序结果**（EchoPM 自身功能）：
+**Output**: `CHARTER.md` — 3 immutable principles + birth inscription + stakeholder matrix
 
-| 优先级 | 功能 | P 值 | 维度 |
-|--------|------|------|------|
-| 1 | 完善 7 个 skill 文件 | 0.82 | 高价值、紧迫（核心交付物） |
-| 2 | 编写 PMBOK 映射文档 | 0.71 | 高价值、中等紧迫 |
-| 3 | tools/ 辅助脚本 | 0.65 | 中等价值、高可行性 |
-| 4 | 示例项目 | 0.48 | 中等价值、低紧迫 |
-| 5 | 国际化（英文版） | 0.35 | 低价值（先聚焦中文社区） |
-
-**归档候选**：无（项目太新，没有需要归档的事项）
+**Reflections**:
+- Principle 1 "Patterns Before Process" came from `/project-charter`'s reference to Echo's `principles.yaml` — it forced us to document every skill's pattern origin clearly
+- Principle 3 "Zero Dependency Barrier" naturally surfaced while writing the `tools/` helper scripts — we discovered that `hashlib` + `sqlite3` + `json` were sufficient for all helper functionality
 
 ---
 
-## 知识导入
+## Priority Ranking
 
-**调用**：`/knowledge-import --source ./docs --db project-knowledge.db --dry-run`
+**Invoked**: `/priority-backlog`
 
-**预演报告**：
+**Ranking results** (EchoPM's own features):
+
+| Priority | Feature | P-Value | Dimensions |
+|----------|---------|---------|------------|
+| 1 | Complete 7 skill files | 0.82 | High value, urgent (core deliverable) |
+| 2 | Write PMBOK mapping doc | 0.71 | High value, medium urgency |
+| 3 | tools/ helper scripts | 0.65 | Medium value, high feasibility |
+| 4 | Example projects | 0.48 | Medium value, low urgency |
+| 5 | Internationalization (English version) | 0.35 | Low value (focus on Chinese community first) |
+
+**Archive candidates**: None (project is too new, no items need archiving)
+
+---
+
+## Knowledge Import
+
+**Invoked**: `/knowledge-import --source ./docs --db project-knowledge.db --dry-run`
+
+**Dry-run report**:
 ```
-扫描结果：3 个文件
+Scan results: 3 files
   [a1b2c3d4e5f6a7b8] docs/patterns.md (8452 chars)
   [b2c3d4e5f6a7b8c9] docs/pmbok-mapping.md (6234 chars)
   [c3d4e5f6a7b8c9d0] docs/faq.md (3210 chars)
 
-去重后待导入：3 个（全新增）
-已存在（跳过）：0
-预计新增知识原子：约 150 条（first_para 模式）
+To import (after dedup): 3 (all new)
+Already exist (skip): 0
+Estimated new knowledge atoms: ~150 (first_para mode)
 ```
 
-**实际导入**：跳过（预演阶段确认无问题，等待实际需求时再导入）
+**Actual import**: Skipped (dry-run confirmed no issues, waiting for actual need before importing)
 
 ---
 
-## 项目脉搏
+## Project Pulse
 
-**调用**：`/project-pulse`
+**Invoked**: `/project-pulse`
 
-**初始化**：
+**Initialization**:
 ```
-Valence: +0.30（初始值）
-Arousal: 0.30（初始值）
-状态：😐 平稳
-建议：一切正常，继续观察
+Valence: +0.30 (initial value)
+Arousal: 0.30 (initial value)
+Status: 😐 Stable
+Suggestion: All normal, continue observing
 ```
 
-**信号记录**：
-- 2026-07-14：完成项目骨架搭建 → +0.10 valence, +0.15 arousal
-- 2026-07-14：明确 3 条不可变原则 → +0.15 valence, +0.05 arousal
+**Signal records**:
+- 2026-07-14: Project skeleton setup complete → +0.10 valence, +0.15 arousal
+- 2026-07-14: 3 immutable principles defined → +0.15 valence, +0.05 arousal
 
-**当前脉搏**：
+**Current pulse**:
 ```
-Valence: +0.54（↑ 0.24）
-Arousal: 0.49（↑ 0.19）
-状态：😊 健康
-建议：保持节奏
+Valence: +0.54 (↑ 0.24)
+Arousal: 0.49 (↑ 0.19)
+Status: 😊 Healthy
+Suggestion: Maintain pace
 ```
 
 ---
 
-## 回顾反思
+## Retrospective
 
-**计划**：在 Phase 4 完成后、首次发布前，调用 `/retrospective --scope phase-1-4`
+**Plan**: After Phase 4 completion, before the first release, invoke `/retrospective --scope phase-1-4`
 
-**预期产出**：
-- 锚点达成：7 个 skills 是否全部与回响模式对齐？
-- 模式结晶：开发过程中发现的可复用模式
-- 归档遗忘：Phase 1-4 中过时的中间版本文件
+**Expected outputs**:
+- Anchor review: Are all 7 skills aligned with Echo patterns?
+- Pattern crystallization: Reusable patterns discovered during development
+- Archive and forget: Outdated intermediate version files from Phases 1–4
 
 ---
 
-## Dogfooding 经验总结
+## Dogfooding Lessons
 
-1. **"吃自己的狗粮"是诚实的唯一方式**——在写 `/project-charter` 的 skill 文档时，我们同时用它生成了 EchoPM 自身的 CHARTER.md，立即发现了模板中的不足
+1. **"Eating your own dog food is the only honest approach"** — While writing the `/project-charter` skill doc, we simultaneously used it to generate EchoPM's own CHARTER.md, immediately discovering gaps in the template
 
-2. **零依赖门槛不是限制而是解放**——决策"只用 Python 标准库"后，`tools/` 的开发速度反而更快，因为不需要纠结选哪个库
+2. **Zero dependency barrier is liberation, not limitation** — After deciding "Python standard library only," `tools/` development actually became faster because there was no need to debate which library to choose
 
-3. **PMBOK 映射是反向验证**——写完所有 skills 后才写的 `docs/pmbok-mapping.md`，发现监控过程组的覆盖度远超预期（7/11），但规划过程组还有大量估算类过程未覆盖——这正是下一版的方向
+3. **PMBOK mapping is reverse validation** — We only wrote `docs/pmbok-mapping.md` after completing all skills, discovering that the Monitoring process group coverage far exceeded expectations (7/11), but the Planning process group still has many estimation processes uncovered — this is exactly the direction for the next version

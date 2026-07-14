@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""双系统检索引擎。
+"""Dual-system search engine.
 
-源自回响计划 src/echo/agent/core.py 的双系统检索模式：
-System 1（快速关键词，始终可用）→ System 2（LLM 语义重排，可选，失败静默回退）
+Derived from Project Echo's src/echo/agent/core.py dual-system retrieval pattern:
+System 1 (fast keywords, always available) → System 2 (LLM semantic re-rank, optional, silent fallback on failure)
 
-用法：
-    python search.py --db knowledge.db --query "数据库迁移" --deep
+Usage:
+    python search.py --db knowledge.db --query "database migration" --deep
 
-依赖：Python 3.8+（零外部依赖，使用 sqlite3 内置 FTS5）
+Dependencies: Python 3.8+ (zero external dependencies, uses sqlite3 built-in FTS5)
 """
 
 import json
@@ -36,7 +36,7 @@ class SearchStats:
 
 
 class DualSystemSearch:
-    """双系统检索引擎。对应 Echo 的 _retrieve_memories()。"""
+    """Dual-system search engine. Corresponds to Echo's _retrieve_memories()."""
 
     def __init__(self, db_path: str, use_system2: bool = True,
                  system2_timeout_ms: int = 5000):
@@ -51,14 +51,14 @@ class DualSystemSearch:
 
     def system1_fast_search(self, query: str, limit: int = 20
                             ) -> list[SearchResult]:
-        """System 1：快速关键词搜索。必须 < 100ms，始终返回结果。
+        """System 1: Fast keyword search. Must be < 100ms, always returns results.
 
-        对应 Echo 的 SQL ORDER BY priority_score DESC + 关键词重叠。
+        Corresponds to Echo's SQL ORDER BY priority_score DESC + keyword overlap.
         """
         conn = self._get_conn()
         keywords = query.split()
 
-        # 尝试 FTS5
+        # Try FTS5
         try:
             fts_query = " OR ".join(keywords)
             rows = conn.execute("""
@@ -74,9 +74,9 @@ class DualSystemSearch:
                 conn.close()
                 return [SearchResult(**dict(r)) for r in rows]
         except Exception:
-            pass  # FTS5 不可用，回退
+            pass  # FTS5 unavailable, fall back
 
-        # 回退：LIKE 查询 + 关键词重叠评分
+        # Fallback: LIKE query + keyword overlap scoring
         like_clauses = " OR ".join(["content LIKE ?"] * len(keywords))
         rows = conn.execute(f"""
             SELECT id, content, source, base_weight as rank,
@@ -92,29 +92,30 @@ class DualSystemSearch:
 
     def system2_rerank(self, query: str, candidates: list[SearchResult],
                        top_k: int = 5) -> list[SearchResult]:
-        """System 2：LLM 语义重排。可选增强，失败静默回退。
+        """System 2: LLM semantic re-rank. Optional enhancement, silent fallback on failure.
 
-        对应 Echo 的 _semantic_rerank()。
+        Corresponds to Echo's _semantic_rerank().
 
-        注意：此实现是占位符——真正的 LLM 调用由 Claude Code 在 skill
-        运行时完成。独立脚本仅用于演示 System 1。
+        Note: This implementation is a placeholder — actual LLM invocation is
+        performed by Claude Code at skill runtime. The standalone script only
+        demonstrates System 1.
         """
-        # 独立运行时，System 2 不可用，直接返回 System 1 结果
+        # When running standalone, System 2 is unavailable — return System 1 results directly
         return candidates[:top_k]
 
     def search(self, query: str, limit: int = 10,
                enable_system2: bool = True) -> tuple[list[SearchResult], SearchStats]:
-        """执行完整的两层检索。对应 Echo 的 retrieve() 流程。"""
+        """Execute full two-tier retrieval. Corresponds to Echo's retrieve() flow."""
         stats = SearchStats()
         t0 = time.perf_counter()
 
-        # System 1：快速通道（始终运行）
+        # System 1: Fast path (always runs)
         t1 = time.perf_counter()
-        results = self.system1_fast_search(query, limit=limit * 3)  # 多取一些给 System 2
+        results = self.system1_fast_search(query, limit=limit * 3)  # Fetch extra for System 2
         stats.system1_time_ms = (time.perf_counter() - t1) * 1000
         stats.system1_count = len(results)
 
-        # System 2：语义重排（可选）
+        # System 2: Semantic re-rank (optional)
         if enable_system2 and self.use_system2 and len(results) > 5:
             t2 = time.perf_counter()
             try:
@@ -123,20 +124,20 @@ class DualSystemSearch:
                     results = reranked
                     stats.system2_used = True
             except Exception:
-                pass  # 静默回退
+                pass  # Silent fallback
             stats.system2_time_ms = (time.perf_counter() - t2) * 1000
 
-        # 记录访问（正反馈闭环）
+        # Record access (positive feedback loop)
         self._record_access([r.id for r in results])
 
         stats.total_time_ms = (time.perf_counter() - t0) * 1000
         return results[:limit], stats
 
     def _record_access(self, ids: list[int]):
-        """记录检索访问，触发正反馈强化。
+        """Record retrieval access, triggering positive feedback reinforcement.
 
-        对应 Echo 的 record_access()。
-        base_weight += 0.02（上限 1.0），access_count += 1。
+        Corresponds to Echo's record_access().
+        base_weight += 0.02 (cap 1.0), access_count += 1.
         """
         conn = self._get_conn()
         conn.execute("""
@@ -150,9 +151,9 @@ class DualSystemSearch:
         conn.close()
 
     def impact_search(self, keyword: str) -> list[SearchResult]:
-        """变更影响分析：搜索所有提及 keyword 的文档。
+        """Change impact analysis: search all documents mentioning the keyword.
 
-        对应 /smart-search 的 --impact 模式。
+        Corresponds to /smart-search's --impact mode.
         """
         conn = self._get_conn()
         rows = conn.execute("""
@@ -169,12 +170,12 @@ class DualSystemSearch:
 
 if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(description="双系统检索引擎")
-    parser.add_argument("--db", default="knowledge.db", help="SQLite 数据库路径")
-    parser.add_argument("--query", required=True, help="搜索查询")
-    parser.add_argument("--deep", action="store_true", help="启用 System 2（需要 LLM）")
-    parser.add_argument("--impact", action="store_true", help="变更影响分析模式")
-    parser.add_argument("--fast", action="store_true", help="仅使用 System 1")
+    parser = argparse.ArgumentParser(description="Dual-system search engine")
+    parser.add_argument("--db", default="knowledge.db", help="SQLite database path")
+    parser.add_argument("--query", required=True, help="Search query")
+    parser.add_argument("--deep", action="store_true", help="Enable System 2 (requires LLM)")
+    parser.add_argument("--impact", action="store_true", help="Change impact analysis mode")
+    parser.add_argument("--fast", action="store_true", help="System 1 only")
     args = parser.parse_args()
 
     search_engine = DualSystemSearch(
@@ -184,16 +185,16 @@ if __name__ == "__main__":
 
     if args.impact:
         results = search_engine.impact_search(args.query)
-        print(f"变更影响分析 — \"{args.query}\"")
-        print(f"找到 {len(results)} 条相关文档：")
+        print(f"Change Impact Analysis — \"{args.query}\"")
+        print(f"Found {len(results)} relevant document(s):")
     else:
         results, stats = search_engine.search(
             args.query,
             enable_system2=args.deep,
         )
-        print(f"搜索 \"{args.query}\" — {stats.system1_count} 条候选"
+        print(f"Search \"{args.query}\" — {stats.system1_count} candidate(s)"
               f" ({stats.system1_time_ms:.1f}ms)"
-              + (f" → System 2 重排 ({stats.system2_time_ms:.1f}ms)"
+              + (f" → System 2 re-rank ({stats.system2_time_ms:.1f}ms)"
                  if stats.system2_used else ""))
 
     for i, r in enumerate(results, 1):

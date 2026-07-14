@@ -1,100 +1,100 @@
-# /priority-backlog — 优先级排序
+# /priority-backlog — Priority Ranking
 
-## 触发条件
+## Trigger Conditions
 
-当用户说"排优先级"、"backlog 太多了"、"先做哪个"、"需求排序"、"优先级评分"、"priority"、"怎么排序"、"帮我排一下"、"太多任务了"时激活。
+Activate when the user says "prioritize", "backlog too many items", "what should I do first", "requirement ranking", "priority scoring", "priority", "how to sort", "help me sort", "too many tasks".
 
-## 对齐 PMBOK
+## PMBOK Alignment
 
-- **5.1 规划范围管理**：定义如何管理项目范围和需求
-- **6.2 定义活动**：将 WBS 工作包分解为具体活动
-- **11.3 实施定性风险分析**：评估风险概率和影响，排定优先级
-- **11.4 实施定量风险分析**：数值化分析风险对项目目标的影响
+- **5.1 Plan Scope Management**: Define how to manage project scope and requirements
+- **6.2 Define Activities**: Decompose WBS work packages into concrete activities
+- **11.3 Perform Qualitative Risk Analysis**: Assess risk probability and impact, prioritize
+- **11.4 Perform Quantitative Risk Analysis**: Numerically analyze risk impact on project objectives
 
-## 源自回响
+## Echo Origins
 
-Project Echo 的三因素乘法记忆优先级（详见 `docs/patterns.md`）：
+Project Echo's three-factor multiplicative memory priority (see `docs/patterns.md` for details):
 
-- `src/echo/memory/models.py` L74-152：`compute_priority()` 公式
-- `src/echo/memory/store.py` L476-495：SQL 批量重算 `_recalc_all_priorities()`
-- 公式：**P = W_base × f_access × f_emotion × f_recency**
-- 关键设计：base_weight 起始 0.5（留增长空间）、遗忘阈值 0.05（软删除）
+- `src/echo/memory/models.py` L74-152: `compute_priority()` formula
+- `src/echo/memory/store.py` L476-495: SQL batch recalculation `_recalc_all_priorities()`
+- Formula: **P = W_base × f_access × f_emotion × f_recency**
+- Key design: base_weight starts at 0.5 (leaving room for growth), forget threshold at 0.05 (soft delete)
 
-核心洞察：**乘法评分中每个维度都重要——单一弱项拖垮总分，不像加法评分中强项可以弥补弱项。**
+Core insight: **In multiplicative scoring, every dimension matters — a single weakness drags down the total score, unlike additive scoring where strengths can compensate for weaknesses.**
 
 ---
 
-## 工作流
+## Workflow
 
-### 第一步：选择排序维度
+### Step 1: Select Ranking Dimensions
 
-从以下维度库中选择 3-5 个适用于当前场景的维度：
+Choose 3–5 dimensions applicable to the current context from this library:
 
-| 维度 | 含义 | 适用场景 |
-|------|------|---------|
-| **价值 (value)** | 业务/用户价值大小 | 所有场景 |
-| **紧迫性 (urgency)** | 时间敏感程度 | 有 deadline 的场景 |
-| **可行性 (feasibility)** | 技术实现难度（取倒数） | 技术方案选择 |
-| **风险 (risk)** | 不做这件事的风险 | 风险驱动的项目 |
-| **依赖性 (dependency)** | 被多少其他事项依赖 | 平台/基础设施项目 |
-| **新鲜度 (recency)** | 上次关注距今多久 | 维护类 backlog |
-| **干系人权重 (stakeholder)** | 提出者的影响力 | 多方需求冲突时 |
+| Dimension | Meaning | Best For |
+|-----------|---------|----------|
+| **Value** | Business/user value magnitude | All scenarios |
+| **Urgency** | Time sensitivity | Deadline-driven scenarios |
+| **Feasibility** | Technical implementation difficulty (inverted) | Technical solution selection |
+| **Risk** | Risk of NOT doing this item | Risk-driven projects |
+| **Dependency** | How many other items depend on this | Platform/infrastructure projects |
+| **Recency** | Time since last attention | Maintenance backlogs |
+| **Stakeholder Weight** | Proposer's influence | Conflicting multi-stakeholder demands |
 
-### 第二步：设计因子公式
+### Step 2: Design Factor Formulas
 
-对每个选定维度，设计一个**乘法因子**，满足：
-- 中性值 = 1.0（不影响总分）
-- 有利值 > 1.0（放大总分）
-- 不利值在 (0, 1.0) 区间（缩小但不归零）
-- 累积型因子用对数递减，时间型因子用指数衰减
+For each selected dimension, design a **multiplicative factor** that satisfies:
+- Neutral value = 1.0 (no effect on total score)
+- Favorable value > 1.0 (amplifies total score)
+- Unfavorable value in (0, 1.0) range (shrinks but never zeroes out)
+- Cumulative factors use logarithmic decay, temporal factors use exponential decay
 
-**参考 Echo 的因子设计**：
+**Reference — Echo's factor design**:
 
 ```
-f_access = 1.0 + log(1 + count) × 0.1    # 对数递减，每次访问收益递减
-f_emotion = 1.0 + |valence| × 0.3 + arousal × 0.2  # 情绪强度，最大 1.5 倍
-f_recency = 0.5 ^ (age_hours / half_life_hours)     # 指数衰减，半衰期后权重减半
+f_access = 1.0 + log(1 + count) × 0.1    # Logarithmic decay, diminishing returns per access
+f_emotion = 1.0 + |valence| × 0.3 + arousal × 0.2  # Emotional intensity, max 1.5×
+f_recency = 0.5 ^ (age_hours / half_life_hours)     # Exponential decay, weight halves after one half-life
 ```
 
-**通用因子模板**：
+**Generic factor templates**:
 
 ```
 f_value = 1.0 + value_score × 0.3        # value_score ∈ [0, 1]
-f_urgency = 1.0 + (deadline_proximity) × 0.4  # 越接近截止日越高
-f_feasibility = 0.5 + feasibility_score × 0.5  # 最低 0.5，不归零
+f_urgency = 1.0 + (deadline_proximity) × 0.4  # Higher as deadline approaches
+f_feasibility = 0.5 + feasibility_score × 0.5  # Minimum 0.5, never reaches zero
 ```
 
-### 第三步：设定 base_weight
+### Step 3: Set base_weight
 
-**关键设计**：base_weight 不从 1.0 开始，而是从 **0.3-0.5** 开始。
+**Key design**: base_weight does NOT start at 1.0, but at **0.3–0.5**.
 
-理由：
-- 留出增长空间（被频繁引用时自动上升）
-- 新事项不天然等于重要事项
-- 经过时间验证的事项自然浮到顶部
+Rationale:
+- Leaves room for growth (naturally rises when frequently referenced)
+- New items are not inherently important
+- Time-tested items naturally float to the top
 
-### 第四步：设定遗忘阈值
+### Step 4: Set the Forget Threshold
 
-定义得分低于多少时软删除/归档：
+Define the score below which items are soft-deleted/archived:
 
-- **归档阈值**（Echo: 0.05）：低于此分的事项不再出现在活跃视野中，但保留在数据库
-- **冷却期**（Echo: 168h = 7 天）：多久不活跃后开始衰减
+- **Archive threshold** (Echo: 0.05): Items below this score disappear from the active view but remain in the database
+- **Cooldown period** (Echo: 168h = 7 days): How long of inactivity before decay begins
 
-### 第五步：生成计算引擎
+### Step 5: Generate the Calculation Engine
 
-生成 `tools/priority_calc.py`，提供两种计算路径：
+Generate `tools/priority_calc.py`, providing two calculation paths:
 
-**路径 A — 单条计算**（新增/更新时）：
+**Path A — Single-item calculation** (on add/update):
 ```python
 def compute_priority(item, context):
-    """计算单条事项的优先级得分。"""
+    """Compute priority score for a single backlog item."""
     f_value = 1.0 + item.value_score * 0.3
     f_urgency = 1.0 + urgency_factor(item.deadline) * 0.4
     f_recency = 0.5 ** (hours_since(item.last_accessed) / item.half_life_hours)
     return item.base_weight * f_value * f_urgency * f_recency
 ```
 
-**路径 B — 批量重算**（定期维护，SQL 一条语句完成）：
+**Path B — Batch recalculation** (periodic maintenance, single SQL statement):
 ```sql
 UPDATE backlog_items
 SET priority_score = base_weight
@@ -106,49 +106,49 @@ SET priority_score = base_weight
 WHERE status = 'open';
 ```
 
-### 第六步：运行并输出报告
+### Step 6: Run and Output Report
 
-用实际项目数据跑一遍，生成排序报告：
+Run with real project data and generate a ranking report:
 
 ```
-优先级排序报告
-═══════════════
-排序维度：价值、紧迫性、可行性、新鲜度
-遗忘阈值：0.05
-生成时间：2026-07-14
+Priority Ranking Report
+═══════════════════════
+Ranking Dimensions: Value, Urgency, Feasibility, Recency
+Forget Threshold: 0.05
+Generated: 2026-07-14
 
-Top 10：
-1. [P=0.89] 用户登录模块重构  ← 高价值 + pending 3 周
-2. [P=0.76] API 限流实现
-3. [P=0.71] 数据库迁移脚本
+Top 10:
+1. [P=0.89] User Login Module Refactor  ← High value + pending for 3 weeks
+2. [P=0.76] API Rate Limiting Implementation
+3. [P=0.71] Database Migration Script
 ...
-归档候选 (P < 0.05)：
-42. [P=0.04] 2024年技术预研 —— 建议归档
+Archive Candidates (P < 0.05):
+42. [P=0.04] 2024 Technology Research — Recommend archiving
 ```
 
 ---
 
-## 产出物
+## Deliverables
 
-| 文件 | 说明 |
-|------|------|
-| `PRIORITY.md` | 排序公式文档 + 维度说明 |
-| `tools/priority_calc.py` | Python 计算引擎 |
-| `templates/priority-matrix.md` | 优先级矩阵模板 |
-| 排序报告 | 当前 backlog 的排序结果 |
+| File | Description |
+|------|-------------|
+| `PRIORITY.md` | Ranking formula documentation + dimension descriptions |
+| `tools/priority_calc.py` | Python calculation engine |
+| `templates/priority-matrix.md` | Priority matrix template |
+| Ranking Report | Current backlog ranking results |
 
 ---
 
-## 使用示例
+## Usage Example
 
 ```bash
-# 面对 50+ 条需求的 backlog
+# Facing a backlog of 50+ items
 /priority-backlog
 
-# AI 会引导你：
-# 1. "你想用什么维度排序？（价值/紧迫性/可行性/风险/新鲜度）"
-# 2. "有没有特别紧急的 deadline？"
-# 3. "多少分以下的事项可以归档？"
-# 4. 计算并输出排序报告
-# 5. 标记归档候选
+# The AI will guide you through:
+# 1. "What dimensions do you want to rank by? (Value/Urgency/Feasibility/Risk/Recency)"
+# 2. "Are there any particularly urgent deadlines?"
+# 3. "Below what score should items be archived?"
+# 4. Compute and output the ranking report
+# 5. Flag archive candidates
 ```

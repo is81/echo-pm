@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""内容哈希去重工具。
+"""Content-hash deduplication tool.
 
-源自回响计划 src/echo/memory/store.py 的 bulk_insert() 模式：
-SHA256 前 16 位十六进制作为 content_hash，UNIQUE INDEX + INSERT OR IGNORE。
+Derived from Project Echo's src/echo/memory/store.py bulk_insert() pattern:
+SHA256 first 16 hex chars as content_hash, UNIQUE INDEX + INSERT OR IGNORE.
 
-用法：
+Usage:
     python hash_dedup.py --input docs/ --db knowledge.db
 
-依赖：Python 3.8+（零外部依赖，仅使用 hashlib + sqlite3 内置库）
+Dependencies: Python 3.8+ (zero external dependencies, uses only hashlib + sqlite3 built-ins)
 """
 
 import hashlib
@@ -16,19 +16,19 @@ from pathlib import Path
 
 
 def content_hash(text: str) -> str:
-    """计算内容哈希（SHA256 前 16 个十六进制字符）。
+    """Compute content hash (first 16 hex characters of SHA256).
 
-    对应 Echo models.py 的 content_hash 字段。
-    64 bits 的碰撞概率在百万级数据量下可忽略不计。
+    Corresponds to Echo models.py's content_hash field.
+    64-bit collision probability is negligible at million-record scale.
     """
     return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
 
 
 def init_db(db_path: str) -> sqlite3.Connection:
-    """初始化知识库，创建 memories 表。
+    """Initialize the knowledge base, creating the knowledge table.
 
-    关键设计：UNIQUE INDEX 在 content_hash 上，
-    去重由 SQLite 引擎强制执行，而非应用层逻辑。
+    Key design: UNIQUE INDEX on content_hash —
+    deduplication is enforced by the SQLite engine, not application logic.
     """
     conn = sqlite3.connect(db_path)
     conn.execute("""
@@ -53,17 +53,17 @@ def init_db(db_path: str) -> sqlite3.Connection:
 def bulk_insert(conn: sqlite3.Connection,
                 items: list[dict],
                 batch_size: int = 500) -> dict:
-    """批量插入，每个批次一个事务，逐条处理 IntegrityError。
+    """Batch insert, one transaction per batch, per-item IntegrityError handling.
 
-    对应 Echo store.py 的 bulk_insert() 模式：
-    - 每批 BEGIN/COMMIT
-    - 逐条 try/except IntegrityError
-    - 返回插入统计（新插入数、重复跳过数、失败数）
+    Corresponds to Echo store.py's bulk_insert() pattern:
+    - BEGIN/COMMIT per batch
+    - Per-item try/except IntegrityError
+    - Returns insert statistics (new, skipped duplicates, failed)
 
     Args:
-        conn: 数据库连接
+        conn: Database connection
         items: [{"content": "...", "source": "...", "tags": [...]}, ...]
-        batch_size: 每批条数
+        batch_size: Items per batch
     """
     stats = {"inserted": 0, "skipped": 0, "failed": 0}
 
@@ -82,7 +82,7 @@ def bulk_insert(conn: sqlite3.Connection,
                 )
                 stats["inserted"] += 1
             except sqlite3.IntegrityError:
-                # 重复内容，静默跳过
+                # Duplicate content, silently skip
                 stats["skipped"] += 1
             except Exception:
                 stats["failed"] += 1
@@ -92,9 +92,9 @@ def bulk_insert(conn: sqlite3.Connection,
 
 
 def dry_run_scan(paths: list[str]) -> list[dict]:
-    """预演模式：扫描文件但不插入，返回报告。
+    """Dry-run mode: scan files without inserting, return report.
 
-    对应 Echo zim_ingest.py 的 dry_run=True 模式。
+    Corresponds to Echo zim_ingest.py's dry_run=True mode.
     """
     results = []
     for path_str in paths:
@@ -119,21 +119,21 @@ def dry_run_scan(paths: list[str]) -> list[dict]:
     return results
 
 
-# 需要 json 模块（内置）
+# json module needed (built-in)
 import json
 
 
 if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(description="内容哈希去重导入工具")
-    parser.add_argument("--input", nargs="+", required=True, help="输入文件/目录")
-    parser.add_argument("--db", default="knowledge.db", help="SQLite 数据库路径")
-    parser.add_argument("--dry-run", action="store_true", help="预演模式（不实际导入）")
+    parser = argparse.ArgumentParser(description="Content-hash dedup import tool")
+    parser.add_argument("--input", nargs="+", required=True, help="Input files/directories")
+    parser.add_argument("--db", default="knowledge.db", help="SQLite database path")
+    parser.add_argument("--dry-run", action="store_true", help="Dry-run mode (no actual import)")
     args = parser.parse_args()
 
     if args.dry_run:
         results = dry_run_scan(args.input)
-        print(f"扫描结果：{len(results)} 个文件")
+        print(f"Scan results: {len(results)} file(s)")
         for r in results:
             print(f"  [{r['hash']}] {r['path']} ({r['size']} chars)")
             print(f"    {r['preview']}")
@@ -145,5 +145,5 @@ if __name__ == "__main__":
 
         conn = init_db(args.db)
         stats = bulk_insert(conn, items)
-        print(f"导入完成：新增 {stats['inserted']}，跳过重复 {stats['skipped']}，失败 {stats['failed']}")
+        print(f"Import complete: {stats['inserted']} inserted, {stats['skipped']} duplicates skipped, {stats['failed']} failed")
         conn.close()

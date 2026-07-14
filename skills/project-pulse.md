@@ -1,157 +1,157 @@
-# /project-pulse — 项目脉搏
+# /project-pulse — Project Pulse
 
-## 触发条件
+## Trigger Conditions
 
-当用户说"项目状态"、"健康度"、"pulse"、"项目怎么样了"、"风险排查"、"进度报告"、"团队状态"、"dashboard"、"项目体检"、"周末汇报"时激活。
+Activate when the user says "project status", "health check", "pulse", "how's the project going", "risk assessment", "progress report", "team status", "dashboard", "project health check", "weekend report".
 
-## 对齐 PMBOK
+## PMBOK Alignment
 
-- **4.4 监控项目工作**：跟踪、审查和报告项目整体进展
-- **6.7 控制进度**：监测进度偏差，采取纠正措施
-- **7.4 控制成本**：监控成本偏差，管理预算变更
-- **11.6 控制风险**：追踪已识别风险，监测残余风险，识别新风险
+- **4.4 Monitor Project Work**: Track, review, and report overall project progress
+- **6.7 Control Schedule**: Monitor schedule variance, take corrective action
+- **7.4 Control Costs**: Monitor cost variance, manage budget changes
+- **11.6 Control Risks**: Track identified risks, monitor residual risks, identify new risks
 
-## 源自回响
+## Echo Origins
 
-Project Echo 的二维情感状态模型 + 动态参数调制（详见 `docs/patterns.md`）：
+Project Echo's two-dimensional emotional state model + dynamic parameter modulation (see `docs/patterns.md` for details):
 
-- `src/echo/agent/core.py` L30-81：`EmotionalState` 类 —— valence × arousal 二维向量
-- `src/echo/agent/core.py` L1009-1031：动态 temperature 公式 —— 健康状态影响行为参数
-- 自然回归机制：长时间无事件时自动向基线回落（防止历史噪音）
-- 启发式更新：无需 LLM，纯计算方法
+- `src/echo/agent/core.py` L30-81: `EmotionalState` class — valence × arousal 2D vector
+- `src/echo/agent/core.py` L1009-1031: Dynamic temperature formula — health state influences behavioral parameters
+- Natural regression mechanism: automatically regresses toward baseline when no events occur for a long time (prevents historical noise)
+- Heuristic updates: No LLM needed, pure computational methods
 
-核心洞察：**用低维连续状态（二维）调制多个下游行为（报告、告警、建议）。项目健康不是二进制（好/坏），而是一个连续的思想空间。**
+Core insight: **Use low-dimensional continuous state (2D) to modulate multiple downstream behaviors (reports, alerts, recommendations). Project health is not binary (good/bad) — it's a continuous thought-space.**
 
 ---
 
-## 工作流
+## Workflow
 
-### 第一步：建立项目健康度二维模型
+### Step 1: Build the Two-Dimensional Project Health Model
 
-参考 Echo 的 valence × arousal 模型，建立项目管理版：
+Referencing Echo's valence × arousal model, build the project management version:
 
-| 维度 | 范围 | 基线 | 含义 |
-|------|------|------|------|
-| **Valence（项目士气）** | [-1.0, 1.0] | 0.3 | 团队满意度、干系人信心、需求稳定性 |
-| **Arousal（活动强度）** | [0.0, 1.0] | 0.3 | 提交频率、PR 合并速度、会议密度、变更频率 |
+| Dimension | Range | Baseline | Meaning |
+|-----------|-------|----------|---------|
+| **Valence (Project Morale)** | [-1.0, 1.0] | 0.3 | Team satisfaction, stakeholder confidence, requirement stability |
+| **Arousal (Activity Intensity)** | [0.0, 1.0] | 0.3 | Commit frequency, PR merge velocity, meeting density, change frequency |
 
-#### Valence 信号源（正面 ↑ / 负面 ↓）
+#### Valence Signal Sources (Positive ↑ / Negative ↓)
 
-| 信号 | 影响 | 权重 |
-|------|------|------|
-| PR 合并顺利（无 revert） | +0.03 | 低 |
-| 收到干系人正面反馈 | +0.15 | 高 |
-| 需求变更频率高 | -0.10 | 高 |
-| Bug 数量上升趋势 | -0.08 | 中 |
-| 团队成员加班增多 | -0.12 | 高 |
-| 里程碑按时达成 | +0.10 | 高 |
+| Signal | Impact | Weight |
+|--------|--------|--------|
+| PR merged smoothly (no revert) | +0.03 | Low |
+| Positive stakeholder feedback received | +0.15 | High |
+| Frequent requirement changes | -0.10 | High |
+| Rising bug count trend | -0.08 | Medium |
+| Increasing team overtime | -0.12 | High |
+| Milestone delivered on time | +0.10 | High |
 
-#### Arousal 信号源（活跃 ↑ / 平静 ↓）
+#### Arousal Signal Sources (Active ↑ / Calm ↓)
 
-| 信号 | 影响 | 权重 |
-|------|------|------|
-| 每日 commit 数 | +0.02 × count | 低 |
-| PR 合并频率 | +0.05 × 日均 | 中 |
-| 会议时长 | +0.03 × 小时 | 低 |
-| 连续 3 天无提交 | -0.15 | 中 |
-| 接近发布日 | +0.20 | 高 |
-| 冻结期 | -0.25 | 高 |
+| Signal | Impact | Weight |
+|--------|--------|--------|
+| Daily commit count | +0.02 × count | Low |
+| PR merge frequency | +0.05 × daily avg | Medium |
+| Meeting hours | +0.03 × hours | Low |
+| 3 consecutive days without commits | -0.15 | Medium |
+| Approaching release date | +0.20 | High |
+| Code freeze period | -0.25 | High |
 
-### 第二步：配置自然回归
+### Step 2: Configure Natural Regression
 
-**关键设计**：长时间无事件时，状态自动向基线回落。
+**Key design**: When no events occur for a long time, state automatically regresses toward baseline.
 
 ```python
-# 每小时无事件 → 向基线回归一步
-REGRESSION_RATE = 0.02  # 每步回归量
+# Every hour without events → one regression step toward baseline
+REGRESSION_RATE = 0.02  # Regression amount per step
 BASELINE = (0.0, 0.3)   # (valence_baseline, arousal_baseline)
 
 def natural_regression(state, hours_since_last_event):
-    steps = hours_since_last_event  # 每小时一步
+    steps = hours_since_last_event  # One step per hour
     for _ in range(steps):
         state.valence += (BASELINE[0] - state.valence) * REGRESSION_RATE
         state.arousal += (BASELINE[1] - state.arousal) * REGRESSION_RATE
     return state
 ```
 
-**设计理由**：防止两年前的一次危机永远影响当前的项目健康读数。
+**Design rationale**: Prevents a crisis from two years ago from permanently affecting today's project health reading.
 
-### 第三步：定义健康度 → 行为映射
+### Step 3: Define Health → Behavior Mapping
 
-| 健康区 | Valence | Arousal | 解读 | 建议行动 |
-|--------|---------|---------|------|---------|
-| 🔥 亢奋 | — | > 0.7 | 节奏过快，有 burnout 风险 | 建议减速，检查可持续性 |
-| 😊 健康 | > 0.3 | 0.3-0.7 | 积极且活跃 | 保持节奏 |
-| 😴 沉寂 | — | < 0.1 | 项目停滞 | 检查阻塞因素 |
-| 😰 焦虑 | < -0.2 | > 0.5 | 高压高强度 | 建议沟通干预 |
-| 💀 危机 | < -0.5 | — | 严重问题 | 触发风险升级 |
+| Health Zone | Valence | Arousal | Interpretation | Suggested Action |
+|-------------|---------|---------|----------------|------------------|
+| 🔥 Hyperactive | — | > 0.7 | Pace too fast, burnout risk | Suggest slowing down, check sustainability |
+| 😊 Healthy | > 0.3 | 0.3–0.7 | Positive and active | Maintain pace |
+| 😴 Stagnant | — | < 0.1 | Project stalled | Check blocking factors |
+| 😰 Anxious | < -0.2 | > 0.5 | High pressure, high intensity | Suggest communication intervention |
+| 💀 Crisis | < -0.5 | — | Serious issues | Trigger risk escalation |
 
-### 第四步：生成项目脉搏周报
+### Step 4: Generate Weekly Project Pulse Report
 
-参考 Echo 的 idle_initiate 模式（根据状态选择不同行为类型）：
+Referencing Echo's idle_initiate pattern (selecting different behavior types based on state):
 
-**周报结构**：
+**Report structure**:
 
 ```
-项目脉搏周报 — 2026-W28
-═══════════════════════
+Project Pulse Weekly — 2026-W28
+══════════════════════════════
 
-📊 健康仪表盘
-  Valence:  ████████░░ +0.45  (↑ 0.08 vs 上周)
-  Arousal:  ██████░░░░  0.52  (↓ 0.03 vs 上周)
-  状态：😊 健康 —— 保持节奏
+📊 Health Dashboard
+  Valence:  ████████░░ +0.45  (↑ 0.08 vs last week)
+  Arousal:  ██████░░░░  0.52  (↓ 0.03 vs last week)
+  Status: 😊 Healthy — Maintain pace
 
-📈 关键信号（本周）
-  ✅ 里程碑 M3 按时达成 (+0.10)
-  ⚠️ 需求变更 3 次 (-0.30 累计)
-  ✅ 正面干系人反馈 (+0.15)
+📈 Key Signals (This Week)
+  ✅ Milestone M3 delivered on time (+0.10)
+  ⚠️ 3 requirement changes (-0.30 cumulative)
+  ✅ Positive stakeholder feedback (+0.15)
 
-🔮 趋势预判
-  • 下周接近发布日 → arousal 预计上升
-  • 3 个未解决的技术债正在累积 → valence 有下行风险
+🔮 Trend Forecast
+  • Release date approaching next week → arousal expected to rise
+  • 3 unresolved tech debts accumulating → downward risk on valence
 
-💡 建议行动
-  1. 发布前安排一次技术债评估
-  2. 干系人反馈已持续正向 → 可适当提高沟通频次
+💡 Recommended Actions
+  1. Schedule a tech debt assessment before release
+  2. Stakeholder feedback consistently positive → consider increasing communication frequency
 ```
 
-### 第五步：设置自动告警
+### Step 5: Set Up Automatic Alerts
 
-参考 Echo 的动态 temperature（状态影响输出参数）：
+Referencing Echo's dynamic temperature (state influencing output parameters):
 
-- **Valence < -0.3 持续 7 天** → 触发干系人沟通建议
-- **Arousal > 0.8 持续 3 天** → 触发 burnout 预警
-- **两者皆低（V < -0.3 AND A < 0.1）持续 5 天** → 触发项目健康危机告警
+- **Valence < -0.3 sustained for 7 days** → Trigger stakeholder communication recommendation
+- **Arousal > 0.8 sustained for 3 days** → Trigger burnout warning
+- **Both low (V < -0.3 AND A < 0.1) sustained for 5 days** → Trigger project health crisis alert
 
 ---
 
-## 产出物
+## Deliverables
 
-| 文件 | 说明 |
-|------|------|
-| `PULSE.md` | 最新一期脉搏报告 |
-| `tools/pulse_tracker.py` | 健康度追踪器 |
-| `templates/pulse-dashboard.md` | 脉搏仪表盘模板 |
+| File | Description |
+|------|-------------|
+| `PULSE.md` | Latest pulse report |
+| `tools/pulse_tracker.py` | Health tracker |
+| `templates/pulse-dashboard.md` | Pulse dashboard template |
 
 ---
 
-## 使用示例
+## Usage Example
 
 ```bash
-# 查看当前健康度
+# Check current health
 /project-pulse
 
-# 生成周报
+# Generate weekly report
 /project-pulse --report weekly
 
-# 手动记录一个信号
-/project-pulse --signal "收到客户正面反馈" --impact +0.15
+# Manually record a signal
+/project-pulse --signal "Received positive customer feedback" --impact +0.15
 
-# 查看趋势
+# View trends
 /project-pulse --trend 30d
 
-# AI 会：
-# 1. 从 git log、PR 记录等来源自动采集信号
-# 2. 计算当前 valence 和 arousal
-# 3. 输出健康仪表盘 + 趋势预判 + 建议行动
+# The AI will:
+# 1. Auto-collect signals from git log, PR records, etc.
+# 2. Calculate current valence and arousal
+# 3. Output health dashboard + trend forecast + recommended actions
 ```

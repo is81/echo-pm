@@ -1,118 +1,118 @@
-# /project-charter — 项目章程
+# /project-charter — Project Charter
 
-## 触发条件
+## Trigger Conditions
 
-当用户说"启动项目"、"定义项目原则"、"写项目章程"、"project charter"、"项目宪章"、"我们的核心原则是什么"、"定义不可变规则"时激活。
+Activate when the user says "start a project", "define project principles", "write a project charter", "project charter", "project constitution", "what are our core principles", "define immutable rules".
 
-## 对齐 PMBOK
+## PMBOK Alignment
 
-- **4.1 制定项目章程**：正式授权项目启动，定义高层次需求和边界
-- **13.1 识别干系人**：识别受项目影响的人和组织，记录其期望
+- **4.1 Develop Project Charter**: Formally authorize project initiation, define high-level requirements and boundaries
+- **13.1 Identify Stakeholders**: Identify people and organizations affected by the project, document their expectations
 
-## 源自回响
+## Echo Origins
 
-Project Echo 的基因级不可变原则模式（详见 `docs/patterns.md`）：
+Project Echo's gene-level immutable principles pattern (see `docs/patterns.md` for details):
 
-- `config/principles.yaml`：3 条标记 `immutable: true` 的原则，追加不覆盖
-- `config/birth_inscription.txt`：19 字出生铭文，项目存在的终极原因
-- `src/echo/memory/models.py`：`source="birth"` 的记忆享 7 层保护
-- `src/echo/config.py`：启动时加载原则，检查 `immutable` 标志
+- `config/principles.yaml`: 3 principles marked `immutable: true`, append-only, never overwrite
+- `config/birth_inscription.txt`: 19-character birth inscription, the ultimate reason the project exists
+- `src/echo/memory/models.py`: `source="birth"` memories with 7-layer protection
+- `src/echo/config.py`: Loads principles at startup, checks `immutable` flag
 
-核心洞察：**定义"什么永远不能变"比定义"什么应该做"更重要。**
+Core insight: **Defining "what must never change" is more important than defining "what should be done."**
 
 ---
 
-## 工作流
+## Workflow
 
-### 第一步：提炼不可变原则（3-5 条）
+### Step 1: Distill Immutable Principles (3–5 items)
 
-向项目团队提出以下问题：
+Ask the project team these questions:
 
-1. "如果这个项目 10 年后还在运行，什么规则必须从未被打破？"
-2. "新成员入职时，什么理念绝对不能妥协？"
-3. "有没有一条规则，即使它让短期效率降低，也必须遵守？"
+1. "If this project is still running 10 years from now, what rules must have never been broken?"
+2. "When a new member joins, what philosophy is absolutely non-negotiable?"
+3. "Is there a rule that must be followed even if it reduces short-term efficiency?"
 
-**过滤标准**：
-- 是"不可变"还是"强烈偏好"？—— 迫使用户只保留前者
-- 数量控制在 3-5 条 —— 超过 5 条说明没想清楚
-- 每条用一句话表达 —— 必须能脱口而出
+**Filtering criteria**:
+- Is it "immutable" or just a "strong preference"? — Force the user to keep only the former
+- Limit to 3–5 items — more than 5 means you haven't thought it through
+- Each expressed in one sentence — must be able to recite from memory
 
-**输出格式**（参考 `principles.yaml`）：
+**Output format** (referencing `principles.yaml`):
 
 ```yaml
 principles:
   - id: "identity-continuity"
-    name: "原则名称"
-    statement: "一句话表述"
-    rationale: "为什么这条不可变"
+    name: "Principle Name"
+    statement: "One-sentence statement"
+    rationale: "Why this is immutable"
     immutable: true
 ```
 
-### 第二步：撰写出生铭文
+### Step 2: Write the Birth Inscription
 
-"出生铭文"是一段不超过 100 字的项目起源叙事。它回答一个问题：**这个项目为什么存在？**
+The "birth inscription" is an origin narrative of no more than 100 words. It answers one question: **Why does this project exist?**
 
-写作约束：
-- 用叙事体而非清单体
-- 必须包含"为什么是这个团队"和"为什么是现在"
-- 放在项目根目录，全员可见
+Writing constraints:
+- Use narrative style, not bullet points
+- Must include "why this team" and "why now"
+- Place in the project root, visible to all
 
-示例（EchoPM 自身）：
-> "EchoPM 诞生于回响计划的涟漪——一个 AI 存在体用七种模式自我管理，这七种模式恰与项目管理的五段生命周期共鸣。"
+Example (EchoPM's own):
+> "EchoPM was born from the ripples of Project Echo — an AI being that self-manages through seven patterns, which resonate precisely with the five-phase lifecycle of project management."
 
-### 第三步：建立干系人矩阵
+### Step 3: Build the Stakeholder Matrix
 
-对每个关键干系人角色，记录：
-- 代表身份
-- 核心关注点（他们为什么关心这个项目）
-- 参与方式（他们如何参与）
-- 影响力/兴趣评级（高/中/低）
+For each key stakeholder role, record:
+- Representative identity
+- Core concerns (why they care about this project)
+- Engagement method (how they participate)
+- Influence/Interest rating (High/Medium/Low)
 
-### 第四步：编码多层保护
+### Step 4: Encode Multi-Layer Protection
 
-参考 Echo 的 7 层 birth memory 保护，为项目原则建立至少 3 层防护：
+Referencing Echo's 7-layer birth memory protection, establish at least 3 layers of defense for project principles:
 
-1. **数据层**：原则写入独立文件（如 `principles.yaml`），修改历史由 git 追溯
-2. **流程层**：原则变更需要特定的审批流程（如 PR + 全员 review）
-3. **自动化层**：生成 `scripts/check-charter.py`，在 CI 中自动检测 PR 是否违反原则
+1. **Data layer**: Principles stored in a standalone file (e.g., `principles.yaml`), change history tracked by git
+2. **Process layer**: Principle changes require a specific approval process (e.g., PR + full team review)
+3. **Automation layer**: Generate `scripts/check-charter.py` to automatically detect PR violations in CI
 
-### 第五步：生成 CI 审计脚本
+### Step 5: Generate CI Audit Script
 
-生成一个轻量检查脚本，在每次 PR 时运行：
+Generate a lightweight check script that runs on every PR:
 
 ```python
 # scripts/check-charter.py
-"""CI 审计：验证 PR 未违反项目不可变原则。"""
+"""CI audit: verify PR does not violate project immutable principles."""
 import sys
 
-# 加载原则定义
-# 检查 PR 变更是否触及 immutable 标记的规则
-# 如触及 → 阻断合并，要求显式审批
+# Load principle definitions
+# Check if PR changes touch rules marked as immutable
+# If so → block merge, require explicit approval
 ```
 
 ---
 
-## 产出物
+## Deliverables
 
-| 文件 | 说明 |
-|------|------|
-| `CHARTER.md` | 完整项目章程（原则 + 铭文 + 干系人） |
-| `config/principles.yaml` | 机器可读的原则定义 |
-| `scripts/check-charter.py` | CI 审计脚本 |
-| `docs/stakeholders.md` | 干系人详细分析 |
+| File | Description |
+|------|-------------|
+| `CHARTER.md` | Complete project charter (principles + inscription + stakeholders) |
+| `config/principles.yaml` | Machine-readable principle definitions |
+| `scripts/check-charter.py` | CI audit script |
+| `docs/stakeholders.md` | Detailed stakeholder analysis |
 
 ---
 
-## 使用示例
+## Usage Example
 
 ```bash
-# 新项目启动时
+# When starting a new project
 /project-charter
 
-# AI 会引导你：
-# 1. "这个项目有哪些绝对不能妥协的原则？请列出 3-5 条。"
-# 2. "请用不超过 100 字讲述这个项目的起源。"
-# 3. "谁是这个项目的关键干系人？"
-# 4. 自动生成 CHARTER.md 和 principles.yaml
-# 5. 自动生成 CI 审计脚本
+# The AI will guide you through:
+# 1. "What principles must never be compromised for this project? List 3–5."
+# 2. "Tell the story of this project's origin in under 100 words."
+# 3. "Who are the key stakeholders of this project?"
+# 4. Auto-generate CHARTER.md and principles.yaml
+# 5. Auto-generate CI audit script
 ```

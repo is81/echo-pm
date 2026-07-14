@@ -1,106 +1,105 @@
-# EchoPM × PMBOK 47 过程映射表
+# EchoPM × PMBOK 47-Process Mapping Table
 
-## 概述
+## Overview
 
-本文档详细映射 EchoPM 的 7 个 skills 与 PMBOK 第 5 版 47 个项目管理过程的对应关系。
+This document provides a detailed mapping between EchoPM's 7 skills and the 47 project management processes from PMBOK 5th Edition.
 
-覆盖率统计：**直接对标 22/47 个过程（47%），间接相关 18/47 个过程（38%），总关联 85%。** 未覆盖的过程主要集中在采购管理和大型项目群管理。
-
----
-
-## 启动过程组（2 个过程）
-
-| PMBOK # | 过程名 | EchoPM Skill | 覆盖方式 |
-|---------|--------|-------------|---------|
-| 4.1 | 制定项目章程 | `/project-charter` | ✅ 直接 —— 不可变原则 + 出生铭文 = 章程核心 |
-| 13.1 | 识别干系人 | `/project-charter` | ✅ 直接 —— 干系人矩阵 + 影响力/兴趣分析 |
+Coverage statistics: **Direct alignment with 22/47 processes (47%), indirect relevance to 18/47 processes (38%), total relevance 85%.** Uncovered processes are primarily in procurement management and large-scale program management.
 
 ---
 
-## 规划过程组（24 个过程）
+## Initiating Process Group (2 processes)
 
-| PMBOK # | 过程名 | EchoPM Skill | 覆盖方式 |
-|---------|--------|-------------|---------|
-| 4.2 | 制定项目管理计划 | `/project-charter` | 🔗 间接 —— 章程是管理计划的输入 |
-| 5.1 | 规划范围管理 | `/priority-backlog` | ✅ 直接 —— WBS 分解后的优先级排序 |
-| 5.2 | 收集需求 | `/knowledge-import` | 🔗 间接 —— 需求文档的结构化导入 |
-| 5.3 | 定义范围 | `/project-charter` | 🔗 间接 —— 不可变原则定义范围边界 |
-| 5.4 | 创建 WBS | — | ⬜ 未覆盖（结构分解工具超出 skill 范围） |
-| 6.1 | 规划进度管理 | — | 🔗 间接 —— pulse 追踪但不管进度规划 |
-| 6.2 | 定义活动 | `/priority-backlog` | ✅ 直接 —— 活动定义后排序 |
-| 6.3 | 排列活动顺序 | `/priority-backlog` | 🔗 间接 —— 优先级暗示执行顺序 |
-| 6.4 | 估算活动资源 | — | ⬜ 未覆盖 |
-| 6.5 | 估算活动持续时间 | — | ⬜ 未覆盖 |
-| 6.6 | 制定进度计划 | — | ⬜ 未覆盖 |
-| 7.1 | 规划成本管理 | — | ⬜ 未覆盖 |
-| 7.2 | 估算成本 | — | ⬜ 未覆盖 |
-| 7.3 | 制定预算 | — | ⬜ 未覆盖 |
-| 8.1 | 规划质量管理 | `/lesson-capture` | 🔗 间接 —— 经验转化为质量改进 |
-| 9.1 | 规划人力资源管理 | — | ⬜ 未覆盖 |
-| 10.1 | 规划沟通管理 | `/knowledge-import` | 🔗 间接 —— 沟通信息的结构化存储 |
-| 11.1 | 规划风险管理 | `/project-pulse` | 🔗 间接 —— 风险信号来源 |
-| 11.2 | 识别风险 | `/project-pulse` | ✅ 直接 —— 健康度信号即风险信号 |
-| 11.3 | 实施定性风险分析 | `/priority-backlog` | ✅ 直接 —— 风险优先级矩阵（乘法评分） |
-| 11.4 | 实施定量风险分析 | `/priority-backlog` | ✅ 直接 —— 数值化风险评分 |
-| 11.5 | 规划风险应对 | — | 🔗 间接 —— pulse 建议行动 = 应对方向 |
-| 12.1 | 规划采购管理 | — | ⬜ 未覆盖（不涉采购） |
-| 13.2 | 规划干系人管理 | `/project-charter` | 🔗 间接 —— 干系人矩阵为管理策略输入 |
+| PMBOK # | Process Name | EchoPM Skill | Coverage |
+|---------|-------------|-------------|----------|
+| 4.1 | Develop Project Charter | `/project-charter` | ✅ Direct — immutable principles + birth inscription = charter core |
+| 13.1 | Identify Stakeholders | `/project-charter` | ✅ Direct — stakeholder matrix + influence/interest analysis |
 
 ---
 
-## 执行过程组（8 个过程）
+## Planning Process Group (24 processes)
 
-| PMBOK # | 过程名 | EchoPM Skill | 覆盖方式 |
-|---------|--------|-------------|---------|
-| 4.3 | 指导与管理项目工作 | `/knowledge-import` + `/lesson-capture` | ✅ 直接 —— 执行中知识沉淀 + 经验捕获 |
-| 8.2 | 实施质量保证 | `/lesson-capture` | ✅ 直接 —— 经验转化为质量改进 |
-| 9.2 | 组建项目团队 | — | ⬜ 未覆盖 |
-| 9.3 | 管理项目团队 | `/lesson-capture` | ✅ 直接 —— 团队经验沉淀与传递 |
-| 9.4 | 建设项目团队 | — | ⬜ 未覆盖 |
-| 10.2 | 管理沟通 | `/knowledge-import` | ✅ 直接 —— 结构化信息分发 |
-| 12.2 | 实施采购 | — | ⬜ 未覆盖（不涉采购） |
-| 13.3 | 管理干系人参与 | `/lesson-capture` + `/project-pulse` | ✅ 直接 —— 反馈捕获 + 满意度追踪 |
-
----
-
-## 监控过程组（11 个过程）
-
-| PMBOK # | 过程名 | EchoPM Skill | 覆盖方式 |
-|---------|--------|-------------|---------|
-| 4.4 | 监控项目工作 | `/project-pulse` | ✅ 直接 —— 整体健康评估 + 脉搏仪表盘 |
-| 4.5 | 实施整体变更控制 | `/smart-search` | ✅ 直接 —— 变更影响检索 |
-| 5.5 | 确认范围 | — | 🔗 间接 |
-| 5.6 | 控制范围 | — | 🔗 间接 |
-| 6.7 | 控制进度 | `/project-pulse` | ✅ 直接 —— 速度监测 + 进度偏差告警 |
-| 7.4 | 控制成本 | `/project-pulse` | ✅ 直接 —— 燃尽趋势 + 成本偏差告警 |
-| 8.3 | 控制质量 | `/lesson-capture` | 🔗 间接 —— 质量问题的经验记录 |
-| 10.3 | 控制沟通 | `/smart-search` | ✅ 直接 —— 信息可追溯、可检索 |
-| 11.6 | 控制风险 | `/project-pulse` | ✅ 直接 —— 风险追踪 + 新风险监测 |
-| 12.3 | 控制采购 | — | ⬜ 未覆盖（不涉采购） |
-| 13.4 | 控制干系人参与 | `/smart-search` + `/project-pulse` | ✅ 直接 —— 干系人关注点追踪 |
+| PMBOK # | Process Name | EchoPM Skill | Coverage |
+|---------|-------------|-------------|----------|
+| 4.2 | Develop Project Management Plan | `/project-charter` | 🔗 Indirect — charter is an input to the management plan |
+| 5.1 | Plan Scope Management | `/priority-backlog` | ✅ Direct — priority ranking after WBS decomposition |
+| 5.2 | Collect Requirements | `/knowledge-import` | 🔗 Indirect — structured import of requirements documents |
+| 5.3 | Define Scope | `/project-charter` | 🔗 Indirect — immutable principles define scope boundaries |
+| 5.4 | Create WBS | — | ⬜ Not covered (structural decomposition beyond skill scope) |
+| 6.1 | Plan Schedule Management | — | 🔗 Indirect — pulse tracks but does not manage schedule planning |
+| 6.2 | Define Activities | `/priority-backlog` | ✅ Direct — ranking activities after definition |
+| 6.3 | Sequence Activities | `/priority-backlog` | 🔗 Indirect — priority implies execution order |
+| 6.4 | Estimate Activity Resources | — | ⬜ Not covered |
+| 6.5 | Estimate Activity Durations | — | ⬜ Not covered |
+| 6.6 | Develop Schedule | — | ⬜ Not covered |
+| 7.1 | Plan Cost Management | — | ⬜ Not covered |
+| 7.2 | Estimate Costs | — | ⬜ Not covered |
+| 7.3 | Determine Budget | — | ⬜ Not covered |
+| 8.1 | Plan Quality Management | `/lesson-capture` | 🔗 Indirect — lessons converted to quality improvements |
+| 9.1 | Plan Human Resource Management | — | ⬜ Not covered |
+| 10.1 | Plan Communications Management | `/knowledge-import` | 🔗 Indirect — structured storage of communication information |
+| 11.1 | Plan Risk Management | `/project-pulse` | 🔗 Indirect — risk signal source |
+| 11.2 | Identify Risks | `/project-pulse` | ✅ Direct — health signals are risk signals |
+| 11.3 | Perform Qualitative Risk Analysis | `/priority-backlog` | ✅ Direct — risk priority matrix (multiplicative scoring) |
+| 11.4 | Perform Quantitative Risk Analysis | `/priority-backlog` | ✅ Direct — numerical risk scoring |
+| 11.5 | Plan Risk Responses | — | 🔗 Indirect — pulse suggested actions = response direction |
+| 12.1 | Plan Procurement Management | — | ⬜ Not covered (no procurement) |
+| 13.2 | Plan Stakeholder Management | `/project-charter` | 🔗 Indirect — stakeholder matrix as input to management strategy |
 
 ---
 
-## 收尾过程组（2 个过程）
+## Executing Process Group (8 processes)
 
-| PMBOK # | 过程名 | EchoPM Skill | 覆盖方式 |
-|---------|--------|-------------|---------|
-| 4.6 | 结束项目或阶段 | `/retrospective` | ✅ 直接 —— 六步收尾流程：反思 → 结晶 → 学习 → 补漏 → 压缩 → 归档 |
-| 12.4 | 结束采购 | `/retrospective` | ✅ 直接 —— 合同收尾 + 知识移交 |
+| PMBOK # | Process Name | EchoPM Skill | Coverage |
+|---------|-------------|-------------|----------|
+| 4.3 | Direct and Manage Project Work | `/knowledge-import` + `/lesson-capture` | ✅ Direct — knowledge deposition + lesson capture during execution |
+| 8.2 | Perform Quality Assurance | `/lesson-capture` | ✅ Direct — lessons converted to quality improvements |
+| 9.2 | Acquire Project Team | — | ⬜ Not covered |
+| 9.3 | Manage Project Team | `/lesson-capture` | ✅ Direct — team experience deposition and transmission |
+| 9.4 | Develop Project Team | — | ⬜ Not covered |
+| 10.2 | Manage Communications | `/knowledge-import` | ✅ Direct — structured information distribution |
+| 12.2 | Conduct Procurements | — | ⬜ Not covered (no procurement) |
+| 13.3 | Manage Stakeholder Engagement | `/lesson-capture` + `/project-pulse` | ✅ Direct — feedback capture + satisfaction tracking |
 
 ---
 
-## 覆盖度总结
+## Monitoring and Controlling Process Group (11 processes)
+
+| PMBOK # | Process Name | EchoPM Skill | Coverage |
+|---------|-------------|-------------|----------|
+| 4.4 | Monitor Project Work | `/project-pulse` | ✅ Direct — overall health assessment + pulse dashboard |
+| 4.5 | Perform Integrated Change Control | `/smart-search` | ✅ Direct — change impact search |
+| 5.5 | Validate Scope | — | 🔗 Indirect |
+| 5.6 | Control Scope | — | 🔗 Indirect |
+| 6.7 | Control Schedule | `/project-pulse` | ✅ Direct — velocity monitoring + schedule variance alerts |
+| 7.4 | Control Costs | `/project-pulse` | ✅ Direct — burn-down trends + cost variance alerts |
+| 8.3 | Control Quality | `/lesson-capture` | 🔗 Indirect — quality issue lesson recording |
+| 10.3 | Control Communications | `/smart-search` | ✅ Direct — information traceability and retrievability |
+| 11.6 | Control Risks | `/project-pulse` | ✅ Direct — risk tracking + new risk monitoring |
+| 12.3 | Control Procurements | — | ⬜ Not covered (no procurement) |
+| 13.4 | Control Stakeholder Engagement | `/smart-search` + `/project-pulse` | ✅ Direct — stakeholder concern tracking |
+
+---
+
+## Closing Process Group (2 processes)
+
+| PMBOK # | Process Name | EchoPM Skill | Coverage |
+|---------|-------------|-------------|----------|
+| 4.6 | Close Project or Phase | `/retrospective` | ✅ Direct — six-step closeout: reflect → crystallize → learn → fill gaps → compress → archive |
+| 12.4 | Close Procurements | `/retrospective` | ✅ Direct — contract closeout + knowledge transfer |
+
+---
+
+## Coverage Summary
 
 ```
-启动  ████████████████ 2/2  (100%)
-规划  ████████░░░░░░░░ 6/24 (25%)*
-执行  ██████████████░░ 5/8  (63%)
-监控  ███████████████░ 7/11 (64%)
-收尾  ████████████████ 2/2  (100%)
-─────────────────────────────
-总计  ██████████░░░░░░ 22/47 (47% 直接 + 38% 间接 = 85%)
+Initiating       ████████████████ 2/2  (100%)
+Planning         ████████░░░░░░░░ 6/24 (25%)*
+Executing        ██████████████░░ 5/8  (63%)
+Monitoring       ███████████████░ 7/11 (64%)
+Closing          ████████████████ 2/2  (100%)
+─────────────────────────────────────────
+Total            ██████████░░░░░░ 22/47 (47% direct + 38% indirect = 85%)
 ```
 
-*规划过程组覆盖度较低的主要原因是 PMBOK 中有大量具体的估算技术（资源、时间、成本）
-不属于 skill 范围，但 EchoPM 的优先级排序覆盖了规划中最重要的决策部分。
+*The lower coverage in the Planning process group is primarily because PMBOK includes many specific estimation techniques (resources, time, cost) that fall outside the scope of skills. However, EchoPM's priority ranking covers the most important decision-making aspects of planning.

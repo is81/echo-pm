@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""三因素乘法优先级计算器。
+"""Three-factor multiplicative priority calculator.
 
-源自回响计划 src/echo/memory/models.py 的 compute_priority() 公式。
+Derived from Project Echo's src/echo/memory/models.py compute_priority() formula.
 
-用法：
+Usage:
     python priority_calc.py --items items.json --output report.md
 
-依赖：Python 3.8+（零外部依赖）
+Dependencies: Python 3.8+ (zero external dependencies)
 """
 
 import json
@@ -18,50 +18,51 @@ from typing import Optional
 
 @dataclass
 class BacklogItem:
-    """待排序事项。对应回响计划的 Memory 模型。"""
+    """A backlog item to rank. Corresponds to Project Echo's Memory model."""
     id: str
     title: str
     description: str = ""
 
-    # 评分输入
-    value_score: float = 0.5        # [0, 1] 业务价值
-    urgency_score: float = 0.0      # [0, 1] 紧迫性
-    feasibility_score: float = 0.5  # [0, 1] 技术可行性
-    stakeholder_weight: float = 1.0 # [0.5, 1.5] 干系人权重
+    # Scoring inputs
+    value_score: float = 0.5        # [0, 1] Business value
+    urgency_score: float = 0.0      # [0, 1] Urgency
+    feasibility_score: float = 0.5  # [0, 1] Technical feasibility
+    stakeholder_weight: float = 1.0 # [0.5, 1.5] Stakeholder weight
 
-    # 状态追踪
-    base_weight: float = 0.5        # 起始 0.5，留增长空间
-    access_count: int = 0           # 被引用次数
+    # State tracking
+    base_weight: float = 0.5        # Starts at 0.5, leaves room for growth
+    access_count: int = 0           # Number of times referenced
     last_accessed: float = field(default_factory=lambda: datetime.now().timestamp())
-    half_life_days: float = 7.0     # 半衰期（天）
+    half_life_days: float = 7.0     # Half-life in days
 
-    # 阈值
-    FORGET_THRESHOLD: float = 0.05  # 低于此分归档
-    ATTENTION_THRESHOLD: float = 0.15  # 低于此分标记"需关注"
+    # Thresholds
+    FORGET_THRESHOLD: float = 0.05   # Archive below this score
+    ATTENTION_THRESHOLD: float = 0.15  # Flag "needs attention" below this score
 
     def compute_priority(self) -> float:
-        """计算乘法优先级得分。
+        """Compute multiplicative priority score.
 
         P = W_base × f_value × f_urgency × f_feasibility × f_stakeholder × f_recency
 
-        每个因子 1.0 = 中性。乘法确保单一弱项拖垮总分。
+        Each factor at 1.0 = neutral. Multiplication ensures a single weakness
+        drags down the total score.
         """
-        # 访问频率因子（对数递减）
+        # Access frequency factor (logarithmic decay)
         f_access = 1.0 + math.log(max(1, 1 + self.access_count)) * 0.1
 
-        # 价值因子
+        # Value factor
         f_value = 1.0 + self.value_score * 0.3
 
-        # 紧迫性因子
+        # Urgency factor
         f_urgency = 1.0 + self.urgency_score * 0.4
 
-        # 可行性因子（最低 0.5，不归零——不可行不等于没价值）
+        # Feasibility factor (min 0.5, never reaches zero — infeasible ≠ worthless)
         f_feasibility = 0.5 + self.feasibility_score * 0.5
 
-        # 干系人因子
+        # Stakeholder factor
         f_stakeholder = self.stakeholder_weight
 
-        # 新鲜度因子（指数衰减）
+        # Recency factor (exponential decay)
         hours_since_access = (
             datetime.now().timestamp() - self.last_accessed
         ) / 3600.0
@@ -79,11 +80,11 @@ class BacklogItem:
         )
 
     def record_access(self):
-        """记录一次访问，触发强化。——对应 Echo 的 record_access()"""
+        """Record an access, triggering reinforcement. — Corresponds to Echo's record_access()"""
         self.last_accessed = datetime.now().timestamp()
         self.access_count += 1
         self.base_weight = min(1.0, self.base_weight + 0.02)
-        # 频繁访问 → 半衰期延长（上限 28 天）
+        # Frequent access → extended half-life (cap 28 days)
         if self.access_count > 3:
             self.half_life_days = min(
                 28.0,
@@ -91,20 +92,20 @@ class BacklogItem:
             )
 
     def status(self) -> str:
-        """返回事项状态。"""
+        """Return item status."""
         p = self.compute_priority()
         if p < self.FORGET_THRESHOLD:
-            return "归档"
+            return "Archive"
         elif p < self.ATTENTION_THRESHOLD:
-            return "需关注"
+            return "Needs Attention"
         elif p > 0.70:
-            return "高优先"
+            return "High Priority"
         else:
-            return "正常"
+            return "Normal"
 
 
 def rank_items(items: list[BacklogItem]) -> list[tuple[BacklogItem, float]]:
-    """对事项列表排序，返回 (事项, 得分) 降序列表。"""
+    """Rank a list of items, returns (item, score) sorted descending."""
     scored = [(item, item.compute_priority()) for item in items]
     scored.sort(key=lambda x: x[1], reverse=True)
     return scored
@@ -112,14 +113,14 @@ def rank_items(items: list[BacklogItem]) -> list[tuple[BacklogItem, float]]:
 
 def generate_report(ranked: list[tuple[BacklogItem, float]],
                     output_path: str = "priority-report.md"):
-    """生成优先级排序报告。"""
+    """Generate priority ranking report."""
     lines = [
-        "# 优先级排序报告",
+        "# Priority Ranking Report",
         "",
-        f"生成时间：{datetime.now().strftime('%Y-%m-%d %H:%M')}",
-        f"事项总数：{len(ranked)}",
+        f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}",
+        f"Total items: {len(ranked)}",
         "",
-        "## Top 事项",
+        "## Top Items",
         "",
     ]
 
@@ -135,20 +136,20 @@ def generate_report(ranked: list[tuple[BacklogItem, float]],
 
     if archived:
         lines.append("")
-        lines.append("## 归档候选（P < 0.05）")
+        lines.append("## Archive Candidates (P < 0.05)")
         lines.append("")
         for item, score in archived:
-            lines.append(f"- [P={score:.3f}] {item.title} —— 建议归档")
+            lines.append(f"- [P={score:.3f}] {item.title} — Recommend archiving")
 
     with open(output_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
 
-    print(f"报告已生成：{output_path}")
-    print(f"活跃事项：{len(active)}，归档候选：{len(archived)}")
+    print(f"Report generated: {output_path}")
+    print(f"Active items: {len(active)}, Archive candidates: {len(archived)}")
 
 
 def batch_recalc_sql(table: str = "backlog_items") -> str:
-    """生成批量重算的 SQL 语句。——对应 Echo store.py 的 _recalc_all_priorities()"""
+    """Generate SQL for batch recalculation. — Corresponds to Echo store.py's _recalc_all_priorities()"""
     return f"""
 UPDATE {table}
 SET priority_score = base_weight
@@ -162,20 +163,20 @@ SET priority_score = base_weight
         / (half_life_days * 24.0)
     )
 WHERE status = 'open'
-  AND source != 'charter';  -- 章程事项永不衰减
+  AND source != 'charter';  -- Charter items never decay
 """
 
 
-# 演示
+# Demo
 if __name__ == "__main__":
     sample_items = [
-        BacklogItem(id="1", title="用户登录模块重构",
+        BacklogItem(id="1", title="User Login Module Refactor",
                     value_score=0.9, urgency_score=0.7, feasibility_score=0.8,
                     access_count=12, last_accessed=datetime.now().timestamp() - 86400 * 3),
-        BacklogItem(id="2", title="API 限流实现",
+        BacklogItem(id="2", title="API Rate Limiting Implementation",
                     value_score=0.8, urgency_score=0.9, feasibility_score=0.7,
                     access_count=5),
-        BacklogItem(id="3", title="2024技术预研",
+        BacklogItem(id="3", title="2024 Technology Research",
                     value_score=0.3, urgency_score=0.0, feasibility_score=0.9,
                     access_count=0,
                     last_accessed=datetime.now().timestamp() - 86400 * 180),
@@ -184,5 +185,5 @@ if __name__ == "__main__":
     ranked = rank_items(sample_items)
     generate_report(ranked)
 
-    print("\n--- 批量重算 SQL ---")
+    print("\n--- Batch Recalc SQL ---")
     print(batch_recalc_sql())

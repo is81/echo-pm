@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""经验捕获助手。
+"""Lesson capture helper.
 
-源自回响计划的三途径学习模式：
-对话反思 + 工具习得 + 自主探索 → 共享 _extract_knowledge() 引擎
+Derived from Project Echo's three-pathway learning pattern:
+conversational reflection + tool learning + autonomous exploration → shared _extract_knowledge() engine
 
-用法：
+Usage:
     python capture.py --channel reflection --input notes.md
-    python capture.py --channel practice --input "K8s 部署问题的解决方案..."
+    python capture.py --channel practice --input "How we solved the K8s deployment issue..."
 
-依赖：Python 3.8+（零外部依赖）。
-注意：实际的 LLM 提取由 Claude Code 在 skill 运行时完成，
-此脚本处理提取后的入库和去重。
+Dependencies: Python 3.8+ (zero external dependencies).
+Note: Actual LLM extraction is performed by Claude Code at skill runtime.
+This script handles post-extraction storage and deduplication.
 """
 
 import hashlib
@@ -21,21 +21,21 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
-# 通道权重映射（对应 Echo 的三途径 base_weight）
+# Channel weight mapping (corresponds to Echo's three-pathway base_weight)
 CHANNEL_WEIGHTS = {
-    "reflection": 0.4,    # 对话反思
-    "practice": 0.45,     # 工具/实践习得
-    "exploration": 0.35,  # 主动探索
+    "reflection": 0.4,    # Conversational reflection
+    "practice": 0.45,     # Tool/practice learning
+    "exploration": 0.35,  # Autonomous exploration
 }
 
 
 def content_hash(text: str) -> str:
-    """SHA256 前 16 位十六进制。"""
+    """First 16 hex characters of SHA256."""
     return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
 
 
 def init_db(db_path: str) -> sqlite3.Connection:
-    """初始化经验库。"""
+    """Initialize the lesson database."""
     conn = sqlite3.connect(db_path)
     conn.execute("""
         CREATE TABLE IF NOT EXISTS lessons (
@@ -62,7 +62,7 @@ def insert_lesson(conn: sqlite3.Connection, content: str,
                   channel: str = "reflection",
                   tags: list[str] = None,
                   related_to: list[str] = None) -> dict:
-    """插入一条经验（自动去重）。"""
+    """Insert a lesson (auto-dedup)."""
     weight = CHANNEL_WEIGHTS.get(channel, 0.4)
 
     try:
@@ -89,7 +89,7 @@ def insert_lesson(conn: sqlite3.Connection, content: str,
 
 def batch_insert_lessons(conn: sqlite3.Connection,
                          lessons: list[dict]) -> dict:
-    """批量插入经验，返回统计。"""
+    """Batch insert lessons, returning statistics."""
     stats = {"inserted": 0, "duplicates": 0, "errors": 0}
 
     conn.execute("BEGIN")
@@ -113,7 +113,7 @@ def batch_insert_lessons(conn: sqlite3.Connection,
 
 
 def list_recent_lessons(conn: sqlite3.Connection, limit: int = 20) -> list[dict]:
-    """列出最近的经验。"""
+    """List recent lessons."""
     rows = conn.execute("""
         SELECT id, content, channel, base_weight, tags, extracted_at
         FROM lessons
@@ -136,43 +136,43 @@ def list_recent_lessons(conn: sqlite3.Connection, limit: int = 20) -> list[dict]
 
 if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(description="经验捕获助手")
+    parser = argparse.ArgumentParser(description="Lesson capture helper")
     parser.add_argument("--channel", choices=["reflection", "practice", "exploration"],
-                        default="reflection", help="捕获通道")
-    parser.add_argument("--input", type=str, help="输入文本（或文件路径）")
-    parser.add_argument("--db", default="lessons.db", help="经验库路径")
-    parser.add_argument("--list", action="store_true", help="列出最近的经验")
-    parser.add_argument("--tags", type=str, help="逗号分隔的标签")
+                        default="reflection", help="Capture channel")
+    parser.add_argument("--input", type=str, help="Input text (or file path)")
+    parser.add_argument("--db", default="lessons.db", help="Lesson DB path")
+    parser.add_argument("--list", action="store_true", help="List recent lessons")
+    parser.add_argument("--tags", type=str, help="Comma-separated tags")
     args = parser.parse_args()
 
     conn = init_db(args.db)
 
     if args.list:
         lessons = list_recent_lessons(conn)
-        print(f"最近 {len(lessons)} 条经验：\n")
+        print(f"Recent {len(lessons)} lessons:\n")
         for l in lessons:
             tags_str = f" [{', '.join(l['tags'])}]" if l['tags'] else ""
             print(f"[{l['channel']}] (w={l['weight']}) {l['content'][:100]}..."
                   f"{tags_str}")
     elif args.input:
-        # 读取输入
+        # Read input
         input_path = Path(args.input)
         if input_path.is_file():
             text = input_path.read_text(encoding="utf-8", errors="replace")
         else:
-            text = args.input  # 直接文本
+            text = args.input  # Direct text
 
         tags = args.tags.split(",") if args.tags else []
 
-        # 注意：真正的 LLM 提取由 Claude Code 在 skill 运行时完成
-        # 此脚本将原始文本以标记形式存储，等待后续处理
+        # Note: Actual LLM extraction is done by Claude Code at skill runtime.
+        # This script stores raw text as a marker, awaiting later processing.
         result = insert_lesson(
             conn,
-            f"[待提取] {text[:500]}",
+            f"[Pending extraction] {text[:500]}",
             channel=args.channel,
             tags=tags,
         )
-        print(f"经验已{result['status']}（channel={args.channel}, weight={result.get('weight', 'N/A')}）")
+        print(f"Lesson {result['status']} (channel={args.channel}, weight={result.get('weight', 'N/A')})")
     else:
         parser.print_help()
 
