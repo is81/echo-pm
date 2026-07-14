@@ -7,19 +7,19 @@
 
 ## Project Charter Generation
 
-**Invoked**: `/project-charter`
+**Invoked**: `/charter`
 
 **Output**: `CHARTER.md` — 3 immutable principles + birth inscription + stakeholder matrix
 
 **Reflections**:
-- Principle 1 "Patterns Before Process" came from `/project-charter`'s reference to Echo's `principles.yaml` — it forced us to document every skill's pattern origin clearly
+- Principle 1 "Patterns Before Process" came from `/charter`'s reference to Echo's `principles.yaml` — it forced us to document every skill's pattern origin clearly
 - Principle 3 "Zero Dependency Barrier" naturally surfaced while writing the `tools/` helper scripts — we discovered that `hashlib` + `sqlite3` + `json` were sufficient for all helper functionality
 
 ---
 
 ## Priority Ranking
 
-**Invoked**: `/priority-backlog`
+**Invoked**: `/prioritize`
 
 **Ranking results** (EchoPM's own features):
 
@@ -37,7 +37,7 @@
 
 ## Knowledge Import
 
-**Invoked**: `/knowledge-import --source ./docs --db project-knowledge.db --dry-run`
+**Invoked**: `/import --source ./docs --db project-knowledge.db --dry-run`
 
 **Dry-run report**:
 ```
@@ -57,7 +57,7 @@ Estimated new knowledge atoms: ~150 (first_para mode)
 
 ## Project Pulse
 
-**Invoked**: `/project-pulse`
+**Invoked**: `/pulse`
 
 **Initialization**:
 ```
@@ -83,7 +83,7 @@ Suggestion: Maintain pace
 
 ## Retrospective
 
-**Plan**: After Phase 4 completion, before the first release, invoke `/retrospective --scope phase-1-4`
+**Plan**: After Phase 4 completion, before the first release, invoke `/retro --scope phase-1-4`
 
 **Expected outputs**:
 - Anchor review: Are all 7 skills aligned with Echo patterns?
@@ -94,7 +94,7 @@ Suggestion: Maintain pace
 
 ## Dogfooding Lessons
 
-1. **"Eating your own dog food is the only honest approach"** — While writing the `/project-charter` skill doc, we simultaneously used it to generate EchoPM's own CHARTER.md, immediately discovering gaps in the template
+1. **"Eating your own dog food is the only honest approach"** — While writing the `/charter` skill doc, we simultaneously used it to generate EchoPM's own CHARTER.md, immediately discovering gaps in the template
 
 2. **Zero dependency barrier is liberation, not limitation** — After deciding "Python standard library only," `tools/` development actually became faster because there was no need to debate which library to choose
 

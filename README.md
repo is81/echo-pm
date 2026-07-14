@@ -10,45 +10,45 @@ EchoPM is a suite of Claude Code Skills, derived from the architectural patterns
 
 Every EchoPM skill originates from a core design pattern in Project Echo:
 
-| Echo Pattern | EchoPM Skill | Process Group |
-|-------------|-------------|---------------|
-| Gene-level immutable principles | `/project-charter` | Initiating |
-| Three-factor multiplicative priority | `/priority-backlog` | Planning |
-| Content-hash idempotent import | `/knowledge-import` | Executing |
-| Multi-pathway learning engine | `/lesson-capture` | Executing |
-| Two-dimensional state dashboard | `/project-pulse` | Monitoring |
-| Dual-system retrieval | `/smart-search` | Monitoring |
-| Sleep-phase memory consolidation | `/retrospective` | Closing |
+| Echo Pattern | EchoPM Skill | Process Group | Modes |
+|-------------|-------------|---------------|-------|
+| Gene-level immutable principles | `/charter` | Initiating | generate, check, report |
+| Three-factor multiplicative priority | `/prioritize` | Planning | rank, validate, report |
+| Content-hash idempotent import | `/import` | Executing | import, dry-run, report |
+| Multi-pathway learning engine | `/lessons` | Executing | extract, review, summarize |
+| Two-dimensional state dashboard | `/pulse` | Monitoring | check, signal, report |
+| Dual-system retrieval | `/search` | Monitoring | search, impact, report |
+| Sleep-phase memory consolidation | `/retro` | Closing | run, verify, summarize |
 
 ## Quick Start
 
 ### Installation
 
-Copy the files from the `skills/` directory into your project's `.claude/skills/` directory, or load them through Claude Code's skill installation mechanism.
+Copy the files from the `skills/` directory into your project's `.claude/skills/` directory, or symlink the entire directory.
 
 ### Usage
 
 ```bash
-# Initiating — define immutable principles and charter
-/project-charter
+# Initiating — generate charter, audit principles
+/charter
 
-# Planning — multiplicative priority ranking for your backlog
-/priority-backlog
+# Planning — multiplicative priority ranking
+/prioritize
 
-# Executing — import external knowledge documents
-/knowledge-import
+# Executing — import & deduplicate knowledge
+/import
 
 # Executing — capture lessons learned
-/lesson-capture
+/lessons
 
-# Monitoring — check project health pulse
-/project-pulse
+# Monitoring — project health from git signals
+/pulse
 
-# Monitoring — intelligent search across the project knowledge base
-/smart-search
+# Monitoring — dual-system search + impact analysis
+/search
 
-# Closing — phase retrospective and knowledge compression
-/retrospective
+# Closing — 6-step phase retrospective
+/retro
 ```
 
 ## Five Process Groups Overview
@@ -56,23 +56,23 @@ Copy the files from the `skills/` directory into your project's `.claude/skills/
 ```
 Initiating → Planning → Executing → Monitoring → Closing
     │           │           │            │           │
-    │           │           │            │           │
     ▼           ▼           ▼            ▼           ▼
- Charter    Priority    Knowledge     Pulse      Retrospective
-                        Import        Search
-                        Lesson
-                        Capture
+ /charter   /prioritize  /import      /pulse      /retro
+                         /lessons     /search
 ```
 
 ## Project Structure
 
 ```
 echo-pm/
-├── skills/          # Claude Code Skills (core deliverables)
-├── templates/       # Companion templates
-├── tools/           # Helper scripts (pure Python, zero dependencies)
-├── examples/        # Usage examples
-└── docs/            # Theoretical background & PMBOK mapping
+├── skills/               # Claude Code Skills (core product, 7 practical .md files)
+├── docs/skill-reference/ # Original methodology docs (kept for reference)
+├── docs/                 # Theoretical background & PMBOK mapping
+├── templates/            # Companion templates
+├── tools/                # Standalone Python scripts (optional, zero deps)
+├── examples/             # Usage examples
+├── .echo-pm/             # Local state (gitignored): pulse, lessons, knowledge index
+└── reports/              # Generated reports (gitignored): audits, summaries, rankings
 ```
 
 ## License

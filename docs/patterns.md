@@ -14,7 +14,7 @@ This document records the seven core design patterns that EchoPM extracted from 
 
 **Core idea**: Defining "what must never change" is more important than defining "what should be done." A project's DNA needs 7 layers of redundant protection.
 
-**Maps to project management**: Project charter and immutable principles. See `/project-charter`.
+**Maps to project management**: Project charter and immutable principles. See `/charter`.
 
 **Echo's implementation details**:
 - Memories with `source="birth"` enjoy 7-layer protection
@@ -43,7 +43,7 @@ f_recency = 0.5 ^ (age_hours / half_life_hours)     # Exponential decay
 - half_life varies per memory — high-arousal memories decay at half rate
 - Active forget threshold at 0.05 — soft delete, no data loss
 
-**Maps to project management**: Backlog priority ranking. See `/priority-backlog`.
+**Maps to project management**: Backlog priority ranking. See `/prioritize`.
 
 ---
 
@@ -66,7 +66,7 @@ f_recency = 0.5 ^ (age_hours / half_life_hours)     # Exponential decay
 - Timeout protection (30s total, 8h cooldown for autonomous exploration)
 - Lifecycle boundary is the right time for maintenance (doesn't consume interaction latency budget)
 
-**Maps to project management**: Phase retrospective and closeout. See `/retrospective`.
+**Maps to project management**: Phase retrospective and closeout. See `/retro`.
 
 ---
 
@@ -125,7 +125,7 @@ Query → System 1 (fast keywords, always available)
 - Vector search as intermediate layer (sqlite-vec → Python cosine → plain text, layered fallbacks)
 - Retrieval IS reinforcement — retrieved memories automatically get weight boosts
 
-**Maps to project management**: Intelligent project knowledge base search. See `/smart-search`.
+**Maps to project management**: Intelligent project knowledge base search. See `/search`.
 
 ---
 
@@ -146,7 +146,7 @@ Query → System 1 (fast keywords, always available)
 
 Each anchor's answer has a confidence score [0, 1]. The CrystallizationEngine ticks every 10 interactions, selecting the least-certain anchor for reflection and update.
 
-**Maps to project management**: Anchors in the project charter (success metrics + immutable principles). See `/project-charter` + `/retrospective`.
+**Maps to project management**: Anchors in the project charter (success metrics + immutable principles). See `/charter` + `/retro`.
 
 ---
 
@@ -173,20 +173,20 @@ INSERT OR IGNORE INTO memories (...) VALUES (...);
 - Configurable content modes: titles / first_para / full
 - Multi-strategy discovery: primary strategy → fallback → last resort
 
-**Maps to project management**: Knowledge import pipeline. See `/knowledge-import`.
+**Maps to project management**: Knowledge import pipeline. See `/import`.
 
 ---
 
 ## Pattern Cross-Reference
 
 ```
-Pattern A (Immutable Principles) ──────────────→ /project-charter
-Pattern B (Three-Factor Priority) ─────────────→ /priority-backlog
-Pattern C (Sleep Consolidation) ───────────────→ /retrospective
+Pattern A (Immutable Principles) ──────────────→ /charter
+Pattern B (Three-Factor Priority) ─────────────→ /prioritize
+Pattern C (Sleep Consolidation) ───────────────→ /retro
 Pattern D (Graceful Degradation) ──→ Foundational design principle for ALL skills
-Pattern E (Dual-System Retrieval) ─────────────→ /smart-search
-Pattern F (Anchor Self-Model) ─────→ /project-charter + /retrospective
-Pattern G (Idempotent Import) ─────────────────→ /knowledge-import
-                                                  /lesson-capture (also uses G's dedup)
-                              Patterns C + E + D → /project-pulse
+Pattern E (Dual-System Retrieval) ─────────────→ /search
+Pattern F (Anchor Self-Model) ─────→ /charter + /retro
+Pattern G (Idempotent Import) ─────────────────→ /import
+                                                  /lessons (also uses G's dedup)
+                              Patterns C + E + D → /pulse
 ```
