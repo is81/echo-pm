@@ -1,0 +1,19 @@
+# 项目不可变原则
+# 用法：新原则追加在下方，不覆盖已有条目
+# 修改流程：（1）提交 PR → （2）全员 review → （3）明确记录变更原因
+
+principles:
+  - id: "principle-1"
+    name: "原则名称"
+    statement: "一句话表述"
+    rationale: "为什么这条不可变——解释背后的原因，这比原则本身更重要。"
+    immutable: true
+    added: "YYYY-MM-DD"
+
+  # 如需追加新原则，在下方添加：
+  # - id: "principle-2"
+  #   name: "..."
+  #   statement: "..."
+  #   rationale: "..."
+  #   immutable: true
+  #   added: "YYYY-MM-DD"
